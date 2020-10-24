@@ -1,0 +1,27 @@
+syntax = "proto3";
+option go_package = ".;call";
+
+package call;
+
+service Call {
+    rpc Connect (ConnectRequest) returns (ConnectResponse);
+    rpc Call (stream CallData) returns (CallResponse);
+}
+
+message ConnectRequest {
+    int64 id = 1;
+}
+
+message ConnectResponse {
+
+}
+
+message CallData {
+    int64 id  = 1;
+    string audio_encoding = 2;
+    bytes audio_data = 3;
+}
+
+message CallResponse {
+
+}
