@@ -9,5 +9,5 @@ type Coordinate struct {
 }
 
 func (c Coordinate) Distance(object Coordinate) float64 {
-	return math.Sqrt(math.Pow(object.x - c.x,2) + math.Pow(object.y - c.y,2) + math.Pow(object.z - c.z,2))
+	return math.Sqrt(math.Pow(object.x-c.x, 2) + math.Pow(object.y-c.y, 2) + math.Pow(object.z-c.z, 2))
 }

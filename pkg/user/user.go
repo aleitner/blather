@@ -5,7 +5,7 @@ import (
 )
 
 type User struct {
-	id int64
-	address string
+	id       int64
+	address  string
 	position *coordinates.Coordinate
 }

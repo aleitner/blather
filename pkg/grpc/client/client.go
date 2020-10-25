@@ -25,7 +25,7 @@ func NewContactConnection(conn *grpc.ClientConn) CallClient {
 	return &Client{conn: conn, route: call.NewCallClient(conn)}
 }
 
-func (client *Client) Connect(ctx context.Context) ( *user.User, error) {
+func (client *Client) Connect(ctx context.Context) (*user.User, error) {
 	connectionReq := &call.ConnectRequest{Id: 1}
 
 	_, err := client.route.Connect(ctx, connectionReq)
@@ -37,7 +37,6 @@ func (client *Client) Connect(ctx context.Context) ( *user.User, error) {
 }
 
 func (client *Client) Call(ctx context.Context, audioInput io.Reader) error {
-
 
 	return nil
 }
