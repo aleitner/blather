@@ -1,1 +1,2 @@
-protoc --proto_path=.. --go_out=.. --go_opt=paths=source_relative --go-grpc_out=.. --go-grpc_opt=paths=source_relative ../internal/protobuf/*.proto
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+protoc --proto_path=$DIR/.. --go_out=$DIR/.. --go_opt=paths=source_relative --go-grpc_out=$DIR/.. --go-grpc_opt=paths=source_relative $DIR/../internal/protobuf/*.proto
