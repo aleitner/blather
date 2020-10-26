@@ -1,0 +1,17 @@
+syntax = "proto3";
+option go_package = ".;phone";
+
+package phone;
+
+service Phone {
+    rpc Call (stream CallData) returns (stream CallData);
+}
+
+message CallData {
+    string audio_encoding = 2;
+    bytes audio_data = 3;
+}
+
+message CallResponse {
+
+}

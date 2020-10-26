@@ -1,1 +1,1 @@
-protoc --proto_path=%~dp0\.. --go_out=%~dp0\..\internal\protobuf --go-grpc_out=%~dp0\..\internal\protobuf %~dp0\..\internal\protobuf\*.proto
+protoc --proto_path=%~dp0\.. --go_out=%~dp0\..\internal\protobuf --go-grpc_out=require_unimplemented_servers=false:%~dp0\..\internal\protobuf %~dp0\..\internal\protobuf\*.proto
