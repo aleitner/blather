@@ -17,8 +17,8 @@ type CallClient interface {
 }
 
 type Client struct {
-	route call.PhoneClient
-	conn  *grpc.ClientConn
+	route  call.PhoneClient
+	conn   *grpc.ClientConn
 	logger log.Logger
 }
 
@@ -36,7 +36,7 @@ func (client *Client) Call(ctx context.Context, audioInput io.Reader) error {
 
 	// Send data
 	go func() {
-		for{
+		for {
 			buf := make([]byte, 4)
 			_, err := audioInput.Read(buf)
 			if err != nil {
@@ -48,42 +48,41 @@ func (client *Client) Call(ctx context.Context, audioInput io.Reader) error {
 			}
 
 			err = stream.Send(&call.CallData{
-				AudioData: buf,
+				AudioData:     buf,
 				AudioEncoding: "idk",
-				Length: int64(len(buf)),
+				Length:        int64(len(buf)),
 			})
 			if err != nil {
 				// server returns with nil
 				if err != io.EOF {
 					client.logger.Printf("stream Send fail: %s/n", err)
 				}
+
 				break
 			}
 		}
 
 		err := stream.CloseSend()
 		if err != nil {
-			client.logger.Printf("stream send fail: %s\n", err)
+			client.logger.Printf("close send fail: %s\n", err)
 		}
-
 		wg.Done()
 	}()
 	wg.Add(1)
 
 	// Receive data
 	go func() {
-		for{
-			for {
-				res, err := stream.Recv()
-				if err != nil {
-					if err != io.EOF {
-						log.Fatalf("stream Recv fail: %s/n", err)
-					}
-					break
+		for {
+			res, err := stream.Recv()
+			if err != nil {
+				if err != io.EOF {
+					log.Fatalf("stream Recv fail: %s/n", err)
 				}
-				fmt.Printf(string(res.GetAudioData()[:res.GetLength()]))
+				break
 			}
+			fmt.Printf(string(res.GetAudioData()[:res.GetLength()]))
 		}
+
 		wg.Done()
 	}()
 	wg.Add(1)

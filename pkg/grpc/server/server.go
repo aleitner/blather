@@ -2,11 +2,12 @@ package server
 
 import (
 	"fmt"
-	call "github.com/aleitner/spacialPhone/internal/protobuf"
 	"io"
 	"log"
 	"strings"
 	"sync"
+
+	call "github.com/aleitner/spacialPhone/internal/protobuf"
 )
 
 type CallServer struct {
@@ -43,8 +44,6 @@ func (cs *CallServer) Call(stream call.Phone_CallServer) error {
 	}()
 	wg.Add(1)
 
-
-
 	// Send data
 	go func() {
 		// TODO: mic input
@@ -65,7 +64,7 @@ func (cs *CallServer) Call(stream call.Phone_CallServer) error {
 			data := &call.CallData{
 				AudioEncoding: "bytes",
 				AudioData:     buf,
-				Length: int64(len(buf)),
+				Length:        int64(len(buf)),
 			}
 
 			if err := stream.Send(data); err != nil {
@@ -76,6 +75,7 @@ func (cs *CallServer) Call(stream call.Phone_CallServer) error {
 				break
 			}
 		}
+
 		wg.Done()
 	}()
 	wg.Add(1)

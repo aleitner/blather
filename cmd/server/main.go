@@ -3,10 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	call "github.com/aleitner/spacialPhone/internal/protobuf"
-	"github.com/aleitner/spacialPhone/pkg/grpc/server"
 	"net"
 	"os"
+
+	call "github.com/aleitner/spacialPhone/internal/protobuf"
+	"github.com/aleitner/spacialPhone/pkg/grpc/server"
 
 	"google.golang.org/grpc"
 )

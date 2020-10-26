@@ -6,10 +6,11 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
+
 	"github.com/aleitner/spacialPhone/pkg/grpc/client"
 	"github.com/urfave/cli"
 	"google.golang.org/grpc"
-	"strings"
 )
 
 var (
@@ -36,7 +37,7 @@ func main() {
 	client := client.NewContactConnection(conn)
 	defer client.CloseConn()
 
-	r:= strings.NewReader("Howdy from the client")
+	r := strings.NewReader("Howdy from the client")
 
 	app.Commands = []cli.Command{
 		{
@@ -44,7 +45,7 @@ func main() {
 			Aliases: []string{"c"},
 			Usage:   "call",
 			Action: func(c *cli.Context) error {
-				err := client.Call(context.Background(),r)
+				err := client.Call(context.Background(), r)
 				if err != nil {
 					return err
 				}
