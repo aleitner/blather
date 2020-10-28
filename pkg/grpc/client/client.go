@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
+	"strconv"
 	"sync"
 
 	call "github.com/aleitner/spacialPhone/internal/protobuf"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 type CallClient interface {
@@ -19,14 +21,23 @@ type CallClient interface {
 type Client struct {
 	route  call.PhoneClient
 	conn   *grpc.ClientConn
-	logger log.Logger
+	logger *log.Logger
+	id     int
 }
 
-func NewContactConnection(conn *grpc.ClientConn) CallClient {
-	return &Client{conn: conn, route: call.NewPhoneClient(conn)}
+func NewContactConnection(id int, logger *log.Logger, conn *grpc.ClientConn) CallClient {
+	return &Client{
+		id:     id,
+		logger: logger,
+		conn:   conn,
+		route:  call.NewPhoneClient(conn),
+	}
 }
 
 func (client *Client) Call(ctx context.Context, audioInput io.Reader) error {
+	md := metadata.Pairs("client-id", strconv.Itoa(client.id))
+	ctx = metadata.NewOutgoingContext(ctx, md)
+
 	stream, err := client.route.Call(ctx)
 	if err != nil {
 		return err
@@ -42,7 +53,7 @@ func (client *Client) Call(ctx context.Context, audioInput io.Reader) error {
 			if err != nil {
 				// server returns with nil
 				if err != io.EOF {
-					client.logger.Printf("audio read fail: %s/n", err)
+					client.logger.Errorf("audio read fail: %s/n", err)
 				}
 				break
 			}
@@ -50,12 +61,12 @@ func (client *Client) Call(ctx context.Context, audioInput io.Reader) error {
 			err = stream.Send(&call.CallData{
 				AudioData:     buf,
 				AudioEncoding: "idk",
-				Length:        int64(len(buf)),
+				Length:        uint64(len(buf)),
 			})
 			if err != nil {
 				// server returns with nil
 				if err != io.EOF {
-					client.logger.Printf("stream Send fail: %s/n", err)
+					client.logger.Errorf("stream Send fail: %s/n", err)
 				}
 
 				break
@@ -64,7 +75,7 @@ func (client *Client) Call(ctx context.Context, audioInput io.Reader) error {
 
 		err := stream.CloseSend()
 		if err != nil {
-			client.logger.Printf("close send fail: %s\n", err)
+			client.logger.Errorf("close send fail: %s\n", err)
 		}
 		wg.Done()
 	}()

@@ -4,13 +4,14 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"log"
+	"math/rand"
 	"os"
-	"strings"
 
 	"github.com/aleitner/spacialPhone/pkg/grpc/client"
+	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 	"google.golang.org/grpc"
+	"gopkg.in/metakeule/loop.v4"
 )
 
 var (
@@ -29,15 +30,17 @@ func main() {
 
 	// Set up connection with rpc server
 	var conn *grpc.ClientConn
-	conn, err := grpc.Dial(fmt.Sprintf("127.0.0.1:%d", port), grpc.WithInsecure())
+	conn, err := grpc.Dial(fmt.Sprintf(":%d", port), grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("grpc Dial fail: %s/n", err)
 	}
 
-	client := client.NewContactConnection(conn)
+	var id = rand.Int()
+	var logger = log.New()
+	client := client.NewContactConnection(id, logger, conn)
 	defer client.CloseConn()
 
-	r := strings.NewReader("Howdy from the client")
+	r := loop.New([]byte("Howdy from the client"))
 
 	app.Commands = []cli.Command{
 		{

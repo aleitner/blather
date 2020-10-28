@@ -10,7 +10,7 @@ service Phone {
 message CallData {
     string audio_encoding = 1;
     bytes audio_data = 2;
-    int64 length = 3;
+    uint64 length = 3;
 }
 
 message CallResponse {

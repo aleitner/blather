@@ -1,26 +1,33 @@
 package server
 
 import (
-	"fmt"
+	"google.golang.org/grpc/metadata"
 	"io"
-	"log"
 	"strings"
 	"sync"
 
 	call "github.com/aleitner/spacialPhone/internal/protobuf"
+	log "github.com/sirupsen/logrus"
 )
 
 type CallServer struct {
-	logger log.Logger
-	id     int64
-	// access to microphone
+	logger *log.Logger
 }
 
-func NewCallServer() call.PhoneServer {
-	return &CallServer{}
+func NewCallServer(logger *log.Logger) call.PhoneServer {
+	return &CallServer{
+		logger: logger,
+	}
 }
 
 func (cs *CallServer) Call(stream call.Phone_CallServer) error {
+	md, ok := metadata.FromIncomingContext(stream.Context())
+	if !ok {
+		cs.logger.Error("Failed to retrieve incoming context")
+	}
+
+	clientID := md.Get("client-id")
+
 	var wg sync.WaitGroup
 
 	// Receive data
@@ -30,14 +37,14 @@ func (cs *CallServer) Call(stream call.Phone_CallServer) error {
 			data, err := stream.Recv()
 			if err != nil {
 				if err != io.EOF {
-					cs.logger.Printf("error: %s", err)
+					cs.logger.Error(err.Error())
 				}
 
 				break
 			}
 
 			// TODO: Play parsed audio or mux with other audio channels
-			fmt.Printf(string(data.GetAudioData()[:data.GetLength()]))
+			cs.logger.Infof("%s: %s", clientID, data.GetAudioData()[:data.GetLength()])
 		}
 
 		wg.Done()
@@ -55,7 +62,7 @@ func (cs *CallServer) Call(stream call.Phone_CallServer) error {
 			_, err := r.Read(buf)
 			if err != nil {
 				if err != io.EOF {
-					cs.logger.Printf("error: %s", err)
+					cs.logger.Error(err.Error())
 				}
 
 				break
@@ -64,12 +71,12 @@ func (cs *CallServer) Call(stream call.Phone_CallServer) error {
 			data := &call.CallData{
 				AudioEncoding: "bytes",
 				AudioData:     buf,
-				Length:        int64(len(buf)),
+				Length:        uint64(len(buf)),
 			}
 
 			if err := stream.Send(data); err != nil {
 				if err != io.EOF {
-					cs.logger.Printf("error: %s", err)
+					cs.logger.Error(err.Error())
 				}
 
 				break

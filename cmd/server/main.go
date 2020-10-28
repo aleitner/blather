@@ -8,7 +8,7 @@ import (
 
 	call "github.com/aleitner/spacialPhone/internal/protobuf"
 	"github.com/aleitner/spacialPhone/pkg/grpc/server"
-
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )
 
@@ -34,8 +34,9 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 
-	var s server.CallServer
-	call.RegisterPhoneServer(grpcServer, &s)
+	logger := log.New()
+	s := server.NewCallServer(logger)
+	call.RegisterPhoneServer(grpcServer, s)
 
 	defer grpcServer.GracefulStop()
 	err = grpcServer.Serve(lis)
