@@ -40,14 +40,17 @@ func main() {
 	client := client.NewContactConnection(id, logger, conn)
 	defer client.CloseConn()
 
-	r := loop.New([]byte("Howdy from the client"))
-
 	app.Commands = []cli.Command{
 		{
 			Name:    "call",
 			Aliases: []string{"c"},
 			Usage:   "call",
 			Action: func(c *cli.Context) error {
+				txt := c.Args().First()
+				if len(txt) == 0 {
+					txt = "Howdy from the Client"
+				}
+				r := loop.New([]byte(txt))
 				err := client.Call(context.Background(), r)
 				if err != nil {
 					return err
