@@ -35,7 +35,8 @@ func NewContactConnection(id int, logger *log.Logger, conn *grpc.ClientConn) Cal
 }
 
 func (client *Client) Call(ctx context.Context, audioInput io.Reader) error {
-	md := metadata.Pairs("client-id", strconv.Itoa(client.id))
+	clientId := strconv.Itoa(client.id)
+	md := metadata.Pairs("client-id", clientId)
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
 	stream, err := client.route.Call(ctx)
@@ -59,9 +60,19 @@ func (client *Client) Call(ctx context.Context, audioInput io.Reader) error {
 			}
 
 			err = stream.Send(&call.CallData{
-				AudioData:     buf,
-				AudioEncoding: "idk",
-				Length:        uint64(len(buf)),
+				AudioData: &call.AudioData{
+					AudioData:     buf,
+					AudioEncoding: "idk",
+					Length:        uint64(len(buf)),
+				},
+				UserMetaData: &call.UserMetaData{
+					Id: uint64(client.id),
+					Location: &call.Location{
+						X: 0,
+						Y: 0,
+						Z: 0,
+					},
+				},
 			})
 			if err != nil {
 				// server returns with nil
@@ -91,7 +102,9 @@ func (client *Client) Call(ctx context.Context, audioInput io.Reader) error {
 				}
 				break
 			}
-			fmt.Printf(string(res.GetAudioData()[:res.GetLength()]))
+
+			audioData := res.GetAudioData()
+			fmt.Printf(string(audioData.GetAudioData()[:audioData.GetLength()]))
 		}
 
 		wg.Done()

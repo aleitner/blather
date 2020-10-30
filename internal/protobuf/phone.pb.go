@@ -20,20 +20,239 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type UserMetaData struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id       uint64    `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Location *Location `protobuf:"bytes,2,opt,name=location,proto3" json:"location,omitempty"`
+}
+
+func (x *UserMetaData) Reset() {
+	*x = UserMetaData{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_protobuf_phone_proto_msgTypes[0]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UserMetaData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserMetaData) ProtoMessage() {}
+
+func (x *UserMetaData) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_protobuf_phone_proto_msgTypes[0]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserMetaData.ProtoReflect.Descriptor instead.
+func (*UserMetaData) Descriptor() ([]byte, []int) {
+	return file_internal_protobuf_phone_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *UserMetaData) GetId() uint64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *UserMetaData) GetLocation() *Location {
+	if x != nil {
+		return x.Location
+	}
+	return nil
+}
+
+type UserSettingsData struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Mute     bool            `protobuf:"varint,1,opt,name=mute,proto3" json:"mute,omitempty"`
+	MuteList map[uint64]bool `protobuf:"bytes,2,rep,name=mute_list,json=muteList,proto3" json:"mute_list,omitempty" protobuf_key:"varint,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
+}
+
+func (x *UserSettingsData) Reset() {
+	*x = UserSettingsData{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_protobuf_phone_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UserSettingsData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserSettingsData) ProtoMessage() {}
+
+func (x *UserSettingsData) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_protobuf_phone_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserSettingsData.ProtoReflect.Descriptor instead.
+func (*UserSettingsData) Descriptor() ([]byte, []int) {
+	return file_internal_protobuf_phone_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *UserSettingsData) GetMute() bool {
+	if x != nil {
+		return x.Mute
+	}
+	return false
+}
+
+func (x *UserSettingsData) GetMuteList() map[uint64]bool {
+	if x != nil {
+		return x.MuteList
+	}
+	return nil
+}
+
+type UserSettingsResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Ok bool `protobuf:"varint,1,opt,name=ok,proto3" json:"ok,omitempty"`
+}
+
+func (x *UserSettingsResponse) Reset() {
+	*x = UserSettingsResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_protobuf_phone_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UserSettingsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserSettingsResponse) ProtoMessage() {}
+
+func (x *UserSettingsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_protobuf_phone_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserSettingsResponse.ProtoReflect.Descriptor instead.
+func (*UserSettingsResponse) Descriptor() ([]byte, []int) {
+	return file_internal_protobuf_phone_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *UserSettingsResponse) GetOk() bool {
+	if x != nil {
+		return x.Ok
+	}
+	return false
+}
+
+type Location struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	X float32 `protobuf:"fixed32,1,opt,name=x,proto3" json:"x,omitempty"`
+	Y float32 `protobuf:"fixed32,2,opt,name=y,proto3" json:"y,omitempty"`
+	Z float32 `protobuf:"fixed32,3,opt,name=z,proto3" json:"z,omitempty"`
+}
+
+func (x *Location) Reset() {
+	*x = Location{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_protobuf_phone_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Location) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Location) ProtoMessage() {}
+
+func (x *Location) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_protobuf_phone_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Location.ProtoReflect.Descriptor instead.
+func (*Location) Descriptor() ([]byte, []int) {
+	return file_internal_protobuf_phone_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *Location) GetX() float32 {
+	if x != nil {
+		return x.X
+	}
+	return 0
+}
+
+func (x *Location) GetY() float32 {
+	if x != nil {
+		return x.Y
+	}
+	return 0
+}
+
+func (x *Location) GetZ() float32 {
+	if x != nil {
+		return x.Z
+	}
+	return 0
+}
+
 type CallData struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	AudioEncoding string `protobuf:"bytes,1,opt,name=audio_encoding,json=audioEncoding,proto3" json:"audio_encoding,omitempty"`
-	AudioData     []byte `protobuf:"bytes,2,opt,name=audio_data,json=audioData,proto3" json:"audio_data,omitempty"`
-	Length        uint64 `protobuf:"varint,3,opt,name=length,proto3" json:"length,omitempty"`
+	AudioData    *AudioData    `protobuf:"bytes,1,opt,name=audio_data,json=audioData,proto3" json:"audio_data,omitempty"`
+	UserMetaData *UserMetaData `protobuf:"bytes,2,opt,name=user_meta_data,json=userMetaData,proto3" json:"user_meta_data,omitempty"`
 }
 
 func (x *CallData) Reset() {
 	*x = CallData{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_protobuf_phone_proto_msgTypes[0]
+		mi := &file_internal_protobuf_phone_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -46,7 +265,7 @@ func (x *CallData) String() string {
 func (*CallData) ProtoMessage() {}
 
 func (x *CallData) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_protobuf_phone_proto_msgTypes[0]
+	mi := &file_internal_protobuf_phone_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -59,53 +278,50 @@ func (x *CallData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CallData.ProtoReflect.Descriptor instead.
 func (*CallData) Descriptor() ([]byte, []int) {
-	return file_internal_protobuf_phone_proto_rawDescGZIP(), []int{0}
+	return file_internal_protobuf_phone_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *CallData) GetAudioEncoding() string {
-	if x != nil {
-		return x.AudioEncoding
-	}
-	return ""
-}
-
-func (x *CallData) GetAudioData() []byte {
+func (x *CallData) GetAudioData() *AudioData {
 	if x != nil {
 		return x.AudioData
 	}
 	return nil
 }
 
-func (x *CallData) GetLength() uint64 {
+func (x *CallData) GetUserMetaData() *UserMetaData {
 	if x != nil {
-		return x.Length
+		return x.UserMetaData
 	}
-	return 0
+	return nil
 }
 
-type CallResponse struct {
+type AudioData struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
+
+	AudioEncoding string `protobuf:"bytes,1,opt,name=audio_encoding,json=audioEncoding,proto3" json:"audio_encoding,omitempty"`
+	AudioData     []byte `protobuf:"bytes,2,opt,name=audio_data,json=audioData,proto3" json:"audio_data,omitempty"`
+	Length        uint64 `protobuf:"varint,3,opt,name=length,proto3" json:"length,omitempty"`
 }
 
-func (x *CallResponse) Reset() {
-	*x = CallResponse{}
+func (x *AudioData) Reset() {
+	*x = AudioData{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_protobuf_phone_proto_msgTypes[1]
+		mi := &file_internal_protobuf_phone_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
 }
 
-func (x *CallResponse) String() string {
+func (x *AudioData) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CallResponse) ProtoMessage() {}
+func (*AudioData) ProtoMessage() {}
 
-func (x *CallResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_protobuf_phone_proto_msgTypes[1]
+func (x *AudioData) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_protobuf_phone_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -116,9 +332,30 @@ func (x *CallResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CallResponse.ProtoReflect.Descriptor instead.
-func (*CallResponse) Descriptor() ([]byte, []int) {
-	return file_internal_protobuf_phone_proto_rawDescGZIP(), []int{1}
+// Deprecated: Use AudioData.ProtoReflect.Descriptor instead.
+func (*AudioData) Descriptor() ([]byte, []int) {
+	return file_internal_protobuf_phone_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *AudioData) GetAudioEncoding() string {
+	if x != nil {
+		return x.AudioEncoding
+	}
+	return ""
+}
+
+func (x *AudioData) GetAudioData() []byte {
+	if x != nil {
+		return x.AudioData
+	}
+	return nil
+}
+
+func (x *AudioData) GetLength() uint64 {
+	if x != nil {
+		return x.Length
+	}
+	return 0
 }
 
 var File_internal_protobuf_phone_proto protoreflect.FileDescriptor
@@ -126,19 +363,51 @@ var File_internal_protobuf_phone_proto protoreflect.FileDescriptor
 var file_internal_protobuf_phone_proto_rawDesc = []byte{
 	0x0a, 0x1d, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x62, 0x75, 0x66, 0x2f, 0x70, 0x68, 0x6f, 0x6e, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12,
-	0x05, 0x70, 0x68, 0x6f, 0x6e, 0x65, 0x22, 0x68, 0x0a, 0x08, 0x43, 0x61, 0x6c, 0x6c, 0x44, 0x61,
-	0x74, 0x61, 0x12, 0x25, 0x0a, 0x0e, 0x61, 0x75, 0x64, 0x69, 0x6f, 0x5f, 0x65, 0x6e, 0x63, 0x6f,
-	0x64, 0x69, 0x6e, 0x67, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x61, 0x75, 0x64, 0x69,
-	0x6f, 0x45, 0x6e, 0x63, 0x6f, 0x64, 0x69, 0x6e, 0x67, 0x12, 0x1d, 0x0a, 0x0a, 0x61, 0x75, 0x64,
-	0x69, 0x6f, 0x5f, 0x64, 0x61, 0x74, 0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x09, 0x61,
-	0x75, 0x64, 0x69, 0x6f, 0x44, 0x61, 0x74, 0x61, 0x12, 0x16, 0x0a, 0x06, 0x6c, 0x65, 0x6e, 0x67,
-	0x74, 0x68, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x6c, 0x65, 0x6e, 0x67, 0x74, 0x68,
-	0x22, 0x0e, 0x0a, 0x0c, 0x43, 0x61, 0x6c, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x32, 0x35, 0x0a, 0x05, 0x50, 0x68, 0x6f, 0x6e, 0x65, 0x12, 0x2c, 0x0a, 0x04, 0x43, 0x61, 0x6c,
-	0x6c, 0x12, 0x0f, 0x2e, 0x70, 0x68, 0x6f, 0x6e, 0x65, 0x2e, 0x43, 0x61, 0x6c, 0x6c, 0x44, 0x61,
-	0x74, 0x61, 0x1a, 0x0f, 0x2e, 0x70, 0x68, 0x6f, 0x6e, 0x65, 0x2e, 0x43, 0x61, 0x6c, 0x6c, 0x44,
-	0x61, 0x74, 0x61, 0x28, 0x01, 0x30, 0x01, 0x42, 0x09, 0x5a, 0x07, 0x2e, 0x3b, 0x70, 0x68, 0x6f,
-	0x6e, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x05, 0x70, 0x68, 0x6f, 0x6e, 0x65, 0x22, 0x4b, 0x0a, 0x0c, 0x55, 0x73, 0x65, 0x72, 0x4d, 0x65,
+	0x74, 0x61, 0x44, 0x61, 0x74, 0x61, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x2b, 0x0a, 0x08, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x70, 0x68, 0x6f, 0x6e, 0x65,
+	0x2e, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x08, 0x6c, 0x6f, 0x63, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x22, 0xa7, 0x01, 0x0a, 0x10, 0x55, 0x73, 0x65, 0x72, 0x53, 0x65, 0x74, 0x74,
+	0x69, 0x6e, 0x67, 0x73, 0x44, 0x61, 0x74, 0x61, 0x12, 0x12, 0x0a, 0x04, 0x6d, 0x75, 0x74, 0x65,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x04, 0x6d, 0x75, 0x74, 0x65, 0x12, 0x42, 0x0a, 0x09,
+	0x6d, 0x75, 0x74, 0x65, 0x5f, 0x6c, 0x69, 0x73, 0x74, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32,
+	0x25, 0x2e, 0x70, 0x68, 0x6f, 0x6e, 0x65, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x53, 0x65, 0x74, 0x74,
+	0x69, 0x6e, 0x67, 0x73, 0x44, 0x61, 0x74, 0x61, 0x2e, 0x4d, 0x75, 0x74, 0x65, 0x4c, 0x69, 0x73,
+	0x74, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x08, 0x6d, 0x75, 0x74, 0x65, 0x4c, 0x69, 0x73, 0x74,
+	0x1a, 0x3b, 0x0a, 0x0d, 0x4d, 0x75, 0x74, 0x65, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x6e, 0x74, 0x72,
+	0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x03,
+	0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x08, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x22, 0x26, 0x0a,
+	0x14, 0x55, 0x73, 0x65, 0x72, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x6f, 0x6b, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x08, 0x52, 0x02, 0x6f, 0x6b, 0x22, 0x34, 0x0a, 0x08, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x12, 0x0c, 0x0a, 0x01, 0x78, 0x18, 0x01, 0x20, 0x01, 0x28, 0x02, 0x52, 0x01, 0x78, 0x12,
+	0x0c, 0x0a, 0x01, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x02, 0x52, 0x01, 0x79, 0x12, 0x0c, 0x0a,
+	0x01, 0x7a, 0x18, 0x03, 0x20, 0x01, 0x28, 0x02, 0x52, 0x01, 0x7a, 0x22, 0x76, 0x0a, 0x08, 0x43,
+	0x61, 0x6c, 0x6c, 0x44, 0x61, 0x74, 0x61, 0x12, 0x2f, 0x0a, 0x0a, 0x61, 0x75, 0x64, 0x69, 0x6f,
+	0x5f, 0x64, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x70, 0x68,
+	0x6f, 0x6e, 0x65, 0x2e, 0x41, 0x75, 0x64, 0x69, 0x6f, 0x44, 0x61, 0x74, 0x61, 0x52, 0x09, 0x61,
+	0x75, 0x64, 0x69, 0x6f, 0x44, 0x61, 0x74, 0x61, 0x12, 0x39, 0x0a, 0x0e, 0x75, 0x73, 0x65, 0x72,
+	0x5f, 0x6d, 0x65, 0x74, 0x61, 0x5f, 0x64, 0x61, 0x74, 0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x13, 0x2e, 0x70, 0x68, 0x6f, 0x6e, 0x65, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x4d, 0x65, 0x74,
+	0x61, 0x44, 0x61, 0x74, 0x61, 0x52, 0x0c, 0x75, 0x73, 0x65, 0x72, 0x4d, 0x65, 0x74, 0x61, 0x44,
+	0x61, 0x74, 0x61, 0x22, 0x69, 0x0a, 0x09, 0x41, 0x75, 0x64, 0x69, 0x6f, 0x44, 0x61, 0x74, 0x61,
+	0x12, 0x25, 0x0a, 0x0e, 0x61, 0x75, 0x64, 0x69, 0x6f, 0x5f, 0x65, 0x6e, 0x63, 0x6f, 0x64, 0x69,
+	0x6e, 0x67, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x61, 0x75, 0x64, 0x69, 0x6f, 0x45,
+	0x6e, 0x63, 0x6f, 0x64, 0x69, 0x6e, 0x67, 0x12, 0x1d, 0x0a, 0x0a, 0x61, 0x75, 0x64, 0x69, 0x6f,
+	0x5f, 0x64, 0x61, 0x74, 0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x09, 0x61, 0x75, 0x64,
+	0x69, 0x6f, 0x44, 0x61, 0x74, 0x61, 0x12, 0x16, 0x0a, 0x06, 0x6c, 0x65, 0x6e, 0x67, 0x74, 0x68,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x6c, 0x65, 0x6e, 0x67, 0x74, 0x68, 0x32, 0x7d,
+	0x0a, 0x05, 0x50, 0x68, 0x6f, 0x6e, 0x65, 0x12, 0x2c, 0x0a, 0x04, 0x43, 0x61, 0x6c, 0x6c, 0x12,
+	0x0f, 0x2e, 0x70, 0x68, 0x6f, 0x6e, 0x65, 0x2e, 0x43, 0x61, 0x6c, 0x6c, 0x44, 0x61, 0x74, 0x61,
+	0x1a, 0x0f, 0x2e, 0x70, 0x68, 0x6f, 0x6e, 0x65, 0x2e, 0x43, 0x61, 0x6c, 0x6c, 0x44, 0x61, 0x74,
+	0x61, 0x28, 0x01, 0x30, 0x01, 0x12, 0x46, 0x0a, 0x0e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53,
+	0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x12, 0x17, 0x2e, 0x70, 0x68, 0x6f, 0x6e, 0x65, 0x2e,
+	0x55, 0x73, 0x65, 0x72, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x44, 0x61, 0x74, 0x61,
+	0x1a, 0x1b, 0x2e, 0x70, 0x68, 0x6f, 0x6e, 0x65, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x53, 0x65, 0x74,
+	0x74, 0x69, 0x6e, 0x67, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x09, 0x5a,
+	0x07, 0x2e, 0x3b, 0x70, 0x68, 0x6f, 0x6e, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -153,19 +422,30 @@ func file_internal_protobuf_phone_proto_rawDescGZIP() []byte {
 	return file_internal_protobuf_phone_proto_rawDescData
 }
 
-var file_internal_protobuf_phone_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_internal_protobuf_phone_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_internal_protobuf_phone_proto_goTypes = []interface{}{
-	(*CallData)(nil),     // 0: phone.CallData
-	(*CallResponse)(nil), // 1: phone.CallResponse
+	(*UserMetaData)(nil),         // 0: phone.UserMetaData
+	(*UserSettingsData)(nil),     // 1: phone.UserSettingsData
+	(*UserSettingsResponse)(nil), // 2: phone.UserSettingsResponse
+	(*Location)(nil),             // 3: phone.Location
+	(*CallData)(nil),             // 4: phone.CallData
+	(*AudioData)(nil),            // 5: phone.AudioData
+	nil,                          // 6: phone.UserSettingsData.MuteListEntry
 }
 var file_internal_protobuf_phone_proto_depIdxs = []int32{
-	0, // 0: phone.Phone.Call:input_type -> phone.CallData
-	0, // 1: phone.Phone.Call:output_type -> phone.CallData
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	3, // 0: phone.UserMetaData.location:type_name -> phone.Location
+	6, // 1: phone.UserSettingsData.mute_list:type_name -> phone.UserSettingsData.MuteListEntry
+	5, // 2: phone.CallData.audio_data:type_name -> phone.AudioData
+	0, // 3: phone.CallData.user_meta_data:type_name -> phone.UserMetaData
+	4, // 4: phone.Phone.Call:input_type -> phone.CallData
+	1, // 5: phone.Phone.UpdateSettings:input_type -> phone.UserSettingsData
+	4, // 6: phone.Phone.Call:output_type -> phone.CallData
+	2, // 7: phone.Phone.UpdateSettings:output_type -> phone.UserSettingsResponse
+	6, // [6:8] is the sub-list for method output_type
+	4, // [4:6] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_internal_protobuf_phone_proto_init() }
@@ -175,7 +455,7 @@ func file_internal_protobuf_phone_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_internal_protobuf_phone_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CallData); i {
+			switch v := v.(*UserMetaData); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -187,7 +467,55 @@ func file_internal_protobuf_phone_proto_init() {
 			}
 		}
 		file_internal_protobuf_phone_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CallResponse); i {
+			switch v := v.(*UserSettingsData); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_internal_protobuf_phone_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UserSettingsResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_internal_protobuf_phone_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Location); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_internal_protobuf_phone_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CallData); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_internal_protobuf_phone_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AudioData); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -205,7 +533,7 @@ func file_internal_protobuf_phone_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_internal_protobuf_phone_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

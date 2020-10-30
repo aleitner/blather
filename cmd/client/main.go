@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"time"
 
 	"github.com/aleitner/spacialPhone/pkg/grpc/client"
 	log "github.com/sirupsen/logrus"
@@ -35,7 +36,9 @@ func main() {
 		log.Fatalf("grpc Dial fail: %s/n", err)
 	}
 
-	var id = rand.Int()
+	s1 := rand.NewSource(time.Now().UnixNano())
+	r1 := rand.New(s1)
+	var id = r1.Int()
 	var logger = log.New()
 	client := client.NewContactConnection(id, logger, conn)
 	defer client.CloseConn()

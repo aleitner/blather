@@ -18,6 +18,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PhoneClient interface {
 	Call(ctx context.Context, opts ...grpc.CallOption) (Phone_CallClient, error)
+	UpdateSettings(ctx context.Context, in *UserSettingsData, opts ...grpc.CallOption) (*UserSettingsResponse, error)
 }
 
 type phoneClient struct {
@@ -59,11 +60,21 @@ func (x *phoneCallClient) Recv() (*CallData, error) {
 	return m, nil
 }
 
+func (c *phoneClient) UpdateSettings(ctx context.Context, in *UserSettingsData, opts ...grpc.CallOption) (*UserSettingsResponse, error) {
+	out := new(UserSettingsResponse)
+	err := c.cc.Invoke(ctx, "/phone.Phone/UpdateSettings", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PhoneServer is the server API for Phone service.
 // All implementations should embed UnimplementedPhoneServer
 // for forward compatibility
 type PhoneServer interface {
 	Call(Phone_CallServer) error
+	UpdateSettings(context.Context, *UserSettingsData) (*UserSettingsResponse, error)
 }
 
 // UnimplementedPhoneServer should be embedded to have forward compatible implementations.
@@ -72,6 +83,9 @@ type UnimplementedPhoneServer struct {
 
 func (UnimplementedPhoneServer) Call(Phone_CallServer) error {
 	return status.Errorf(codes.Unimplemented, "method Call not implemented")
+}
+func (UnimplementedPhoneServer) UpdateSettings(context.Context, *UserSettingsData) (*UserSettingsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateSettings not implemented")
 }
 
 // UnsafePhoneServer may be embedded to opt out of forward compatibility for this service.
@@ -111,10 +125,33 @@ func (x *phoneCallServer) Recv() (*CallData, error) {
 	return m, nil
 }
 
+func _Phone_UpdateSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserSettingsData)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PhoneServer).UpdateSettings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phone.Phone/UpdateSettings",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PhoneServer).UpdateSettings(ctx, req.(*UserSettingsData))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Phone_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "phone.Phone",
 	HandlerType: (*PhoneServer)(nil),
-	Methods:     []grpc.MethodDesc{},
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "UpdateSettings",
+			Handler:    _Phone_UpdateSettings_Handler,
+		},
+	},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "Call",

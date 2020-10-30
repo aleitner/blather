@@ -1,50 +1,43 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"sync"
 
-	"github.com/aleitner/spacialPhone/internal/muxer"
-	"google.golang.org/grpc/metadata"
+	"github.com/aleitner/spacialPhone/internal/forwarder"
+
+	"github.com/aleitner/spacialPhone/pkg/user/user_id"
 
 	call "github.com/aleitner/spacialPhone/internal/protobuf"
 	log "github.com/sirupsen/logrus"
 )
 
 type CallServer struct {
-	logger *log.Logger
-	muxer  *muxer.Muxer
+	logger    *log.Logger
+	forwarder *forwarder.Forwarder
 }
 
 func NewCallServer(logger *log.Logger) call.PhoneServer {
 	return &CallServer{
-		logger: logger,
-		muxer:  muxer.NewMuxer(),
+		logger:    logger,
+		forwarder: forwarder.NewForwarder(),
 	}
 }
 
 func (cs *CallServer) Call(stream call.Phone_CallServer) error {
-	md, ok := metadata.FromIncomingContext(stream.Context())
-	if !ok {
-		return fmt.Errorf("Failed to retrieve incoming context")
-	}
-
-	clientIDAsString := md.Get("client-id")
-	if len(clientIDAsString) <= 0 {
-		return fmt.Errorf("Failed to retrieve incoming client id")
-	}
-
-	clientID, err := muxer.NewID(clientIDAsString[0])
+	// Get id from client
+	clientID, err := user_id.NewIDFromMetaData(stream.Context())
 	if err != nil {
 		return fmt.Errorf("Failed to retrieve incoming client id")
 	}
 
-	cs.muxer.Add(clientID)
-	defer cs.muxer.Delete(clientID)
+	// Create forwarder for client
+	cs.forwarder.Add(clientID, stream)
+	defer cs.forwarder.Delete(clientID)
 
 	var wg sync.WaitGroup
-
 	// Receive data
 	go func() {
 		for {
@@ -58,34 +51,8 @@ func (cs *CallServer) Call(stream call.Phone_CallServer) error {
 				break
 			}
 
-			// TODO: Play parsed audio or mux with other audio channels
-			cs.muxer.Produce(clientID, data.GetAudioData()[:data.GetLength()])
-			cs.logger.Infof("%s: %s", clientID, data.GetAudioData()[:data.GetLength()])
-		}
-
-		wg.Done()
-	}()
-	wg.Add(1)
-
-	// Send data
-	go func() {
-		for {
-			//TODO: Get mic audio. encompass the following lines into a Mic.Read()
-			buf := cs.muxer.Consume(clientID)
-
-			data := &call.CallData{
-				AudioEncoding: "bytes",
-				AudioData:     buf,
-				Length:        uint64(len(buf)),
-			}
-
-			if err := stream.Send(data); err != nil {
-				if err != io.EOF {
-					cs.logger.Error(err.Error())
-				}
-
-				break
-			}
+			// Forward the data to the other clients
+			cs.forwarder.ForwardTo(clientID, data)
 		}
 
 		wg.Done()
@@ -94,4 +61,8 @@ func (cs *CallServer) Call(stream call.Phone_CallServer) error {
 
 	wg.Wait()
 	return nil
+}
+
+func (cs *CallServer) UpdateSettings(context.Context, *call.UserSettingsData) (*call.UserSettingsResponse, error) {
+	return nil, nil
 }
