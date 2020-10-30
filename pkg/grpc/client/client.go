@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/aleitner/spacialPhone/pkg/user/coordinates"
+
 	call "github.com/aleitner/spacialPhone/internal/protobuf"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -19,10 +21,11 @@ type CallClient interface {
 }
 
 type Client struct {
-	route  call.PhoneClient
-	conn   *grpc.ClientConn
-	logger *log.Logger
-	id     int
+	route      call.PhoneClient
+	conn       *grpc.ClientConn
+	logger     *log.Logger
+	id         int
+	coordinate coordinates.Coordinate
 }
 
 func NewContactConnection(id int, logger *log.Logger, conn *grpc.ClientConn) CallClient {
@@ -49,7 +52,7 @@ func (client *Client) Call(ctx context.Context, audioInput io.Reader) error {
 	// Send data
 	go func() {
 		for {
-			buf := make([]byte, 4)
+			buf := make([]byte, 1024*16) // Optimal sending size is 16KiB-64KiB
 			_, err := audioInput.Read(buf)
 			if err != nil {
 				// server returns with nil
@@ -66,12 +69,8 @@ func (client *Client) Call(ctx context.Context, audioInput io.Reader) error {
 					Length:        uint64(len(buf)),
 				},
 				UserMetaData: &call.UserMetaData{
-					Id: uint64(client.id),
-					Location: &call.Location{
-						X: 0,
-						Y: 0,
-						Z: 0,
-					},
+					Id:          uint64(client.id),
+					Coordinates: client.coordinate.ToGRPC(),
 				},
 			})
 			if err != nil {
@@ -103,8 +102,9 @@ func (client *Client) Call(ctx context.Context, audioInput io.Reader) error {
 				break
 			}
 
+			userMetaData := res.GetUserMetaData()
 			audioData := res.GetAudioData()
-			fmt.Printf(string(audioData.GetAudioData()[:audioData.GetLength()]))
+			fmt.Printf("%s: %s\n", userMetaData.GetId(), string(audioData.GetAudioData()[:audioData.GetLength()]))
 		}
 
 		wg.Done()

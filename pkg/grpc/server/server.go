@@ -14,11 +14,13 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// CallServer forwards call data to all the clients
 type CallServer struct {
 	logger    *log.Logger
 	forwarder *forwarder.Forwarder
 }
 
+// NewCallServer
 func NewCallServer(logger *log.Logger) call.PhoneServer {
 	return &CallServer{
 		logger:    logger,
@@ -26,6 +28,7 @@ func NewCallServer(logger *log.Logger) call.PhoneServer {
 	}
 }
 
+// Call gets a stream of audio data from the client and forwards it to the other clients
 func (cs *CallServer) Call(stream call.Phone_CallServer) error {
 	// Get id from client
 	clientID, err := user_id.NewIDFromMetaData(stream.Context())
@@ -37,7 +40,8 @@ func (cs *CallServer) Call(stream call.Phone_CallServer) error {
 	cs.forwarder.Add(clientID, stream)
 	defer cs.forwarder.Delete(clientID)
 
-	var wg sync.WaitGroup
+	var wg sync.WaitGroup // NB: we can probably just use a channel here
+
 	// Receive data
 	go func() {
 		for {
@@ -52,7 +56,7 @@ func (cs *CallServer) Call(stream call.Phone_CallServer) error {
 			}
 
 			// Forward the data to the other clients
-			cs.forwarder.ForwardTo(clientID, data)
+			cs.forwarder.Forward(clientID, data)
 		}
 
 		wg.Done()

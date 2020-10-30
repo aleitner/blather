@@ -8,26 +8,6 @@ service Phone {
     rpc UpdateSettings (UserSettingsData) returns (UserSettingsResponse);
 }
 
-message UserMetaData {
-    uint64 id = 1;
-    Location location = 2;
-}
-
-message UserSettingsData {
-    bool mute = 1;
-    map<uint64, bool> mute_list = 2;
-}
-
-message UserSettingsResponse {
-    bool ok = 1;
-}
-
-message Location {
-    float x = 1;
-    float y = 2;
-    float z = 3;
-}
-
 message CallData {
     AudioData audio_data = 1;
     UserMetaData user_meta_data = 2;
@@ -37,4 +17,24 @@ message AudioData {
     string audio_encoding = 1;
     bytes audio_data = 2;
     uint64 length = 3;
+}
+
+message UserMetaData {
+    uint64 id = 1;
+    Coordinates coordinates = 2;
+}
+
+message Coordinates {
+    double x = 1;
+    double y = 2;
+    double z = 3;
+}
+
+message UserSettingsData {
+    bool mute = 1;
+    map<uint64, bool> mute_list = 2;
+}
+
+message UserSettingsResponse {
+    bool ok = 1;
 }

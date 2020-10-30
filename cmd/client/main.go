@@ -36,9 +36,8 @@ func main() {
 		log.Fatalf("grpc Dial fail: %s/n", err)
 	}
 
-	s1 := rand.NewSource(time.Now().UnixNano())
-	r1 := rand.New(s1)
-	var id = r1.Int()
+	var id = rand.New(rand.NewSource(time.Now().UnixNano())).Int()
+
 	var logger = log.New()
 	client := client.NewContactConnection(id, logger, conn)
 	defer client.CloseConn()

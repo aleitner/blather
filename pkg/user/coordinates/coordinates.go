@@ -1,11 +1,23 @@
 package coordinates
 
-import "math"
+import (
+	"math"
+
+	call "github.com/aleitner/spacialPhone/internal/protobuf"
+)
 
 type Coordinate struct {
 	x float64
 	y float64
 	z float64
+}
+
+func (c Coordinate) ToGRPC() *call.Coordinates {
+	return &call.Coordinates{
+		X: c.x,
+		Y: c.y,
+		Z: c.z,
+	}
 }
 
 func (c Coordinate) Distance(object Coordinate) float64 {
