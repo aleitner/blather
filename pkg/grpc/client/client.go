@@ -7,37 +7,44 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/aleitner/spacialPhone/pkg/user/coordinates"
+	"github.com/aleitner/spacialPhone/internal/utils"
 
+	"github.com/faiface/beep"
+
+	"github.com/aleitner/spacialPhone/internal/muxer"
 	call "github.com/aleitner/spacialPhone/internal/protobuf"
+	"github.com/aleitner/spacialPhone/pkg/user/coordinates"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
 
 type CallClient interface {
-	Call(ctx context.Context, audioInput io.Reader) error
+	Call(ctx context.Context, audioInput beep.Streamer, format beep.Format) error
 	CloseConn() error
 }
 
 type Client struct {
+	id         int
+	logger     *log.Logger
 	route      call.PhoneClient
 	conn       *grpc.ClientConn
-	logger     *log.Logger
-	id         int
-	coordinate coordinates.Coordinate
+	coordinate *coordinates.Coordinate
+	muxer      *muxer.Muxer
 }
 
-func NewContactConnection(id int, logger *log.Logger, conn *grpc.ClientConn) CallClient {
+func NewClient(id int, logger *log.Logger, conn *grpc.ClientConn) CallClient {
 	return &Client{
-		id:     id,
-		logger: logger,
-		conn:   conn,
-		route:  call.NewPhoneClient(conn),
+		id:         id,
+		logger:     logger,
+		conn:       conn,
+		route:      call.NewPhoneClient(conn),
+		muxer:      muxer.NewMuxer(logger),
+		coordinate: &coordinates.Coordinate{X: 0, Y: 0, Z: 0},
 	}
 }
 
-func (client *Client) Call(ctx context.Context, audioInput io.Reader) error {
+func (client *Client) Call(ctx context.Context, audioInput beep.Streamer, format beep.Format) error {
 	clientId := strconv.Itoa(client.id)
 	md := metadata.Pairs("client-id", clientId)
 	ctx = metadata.NewOutgoingContext(ctx, md)
@@ -52,11 +59,11 @@ func (client *Client) Call(ctx context.Context, audioInput io.Reader) error {
 	// Send data
 	go func() {
 		for {
-			buf := make([]byte, 1024*16) // Optimal sending size is 16KiB-64KiB
-			_, err := audioInput.Read(buf)
-			if err != nil {
+			buf := make([][2]float64, 1024*64) // Optimal sending size is 16KiB-64KiB
+			numSamples, ok := audioInput.Stream(buf)
+			if !ok {
 				// server returns with nil
-				if err != io.EOF {
+				if audioInput.Err() != nil {
 					client.logger.Errorf("audio read fail: %s/n", err)
 				}
 				break
@@ -64,9 +71,14 @@ func (client *Client) Call(ctx context.Context, audioInput io.Reader) error {
 
 			err = stream.Send(&call.CallData{
 				AudioData: &call.AudioData{
-					AudioData:     buf,
-					AudioEncoding: "idk",
-					Length:        uint64(len(buf)),
+					AudioEncoding: "mp3",
+					Samples:       utils.ToGRPCSampleRate(buf, numSamples),
+					NumSamples:    int32(numSamples),
+					Format: &call.Format{
+						SampleRate:  0,
+						NumChannels: uint32(format.NumChannels),
+						Precision:   uint32(format.Precision),
+					},
 				},
 				UserMetaData: &call.UserMetaData{
 					Id:          uint64(client.id),
@@ -102,9 +114,7 @@ func (client *Client) Call(ctx context.Context, audioInput io.Reader) error {
 				break
 			}
 
-			userMetaData := res.GetUserMetaData()
-			audioData := res.GetAudioData()
-			fmt.Printf("%s: %s\n", userMetaData.GetId(), string(audioData.GetAudioData()[:audioData.GetLength()]))
+			fmt.Printf("%d: %+v\n", res.GetUserMetaData().GetId(), res.GetAudioData())
 		}
 
 		wg.Done()

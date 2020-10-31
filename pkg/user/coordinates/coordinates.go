@@ -7,19 +7,19 @@ import (
 )
 
 type Coordinate struct {
-	x float64
-	y float64
-	z float64
+	X float64
+	Y float64
+	Z float64
 }
 
 func (c Coordinate) ToGRPC() *call.Coordinates {
 	return &call.Coordinates{
-		X: c.x,
-		Y: c.y,
-		Z: c.z,
+		X: c.X,
+		Y: c.Y,
+		Z: c.Z,
 	}
 }
 
 func (c Coordinate) Distance(object Coordinate) float64 {
-	return math.Sqrt(math.Pow(object.x-c.x, 2) + math.Pow(object.y-c.y, 2) + math.Pow(object.z-c.z, 2))
+	return math.Sqrt(math.Pow(object.X-c.X, 2) + math.Pow(object.Y-c.Y, 2) + math.Pow(object.Z-c.Z, 2))
 }

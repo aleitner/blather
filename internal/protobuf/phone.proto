@@ -15,8 +15,20 @@ message CallData {
 
 message AudioData {
     string audio_encoding = 1;
-    bytes audio_data = 2;
-    uint64 length = 3;
+    repeated Sample samples = 2;
+    uint32 num_samples = 3;
+    Format format = 4;
+}
+
+message Sample {
+    double left_channel = 1;
+    double right_channel = 2;
+}
+
+message Format {
+    uint32 sample_rate = 1;
+    uint32 num_channels = 2;
+    uint32 precision = 3;
 }
 
 message UserMetaData {

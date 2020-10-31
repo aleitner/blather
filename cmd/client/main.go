@@ -8,11 +8,12 @@ import (
 	"os"
 	"time"
 
+	"github.com/faiface/beep/mp3"
+
 	"github.com/aleitner/spacialPhone/pkg/grpc/client"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 	"google.golang.org/grpc"
-	"gopkg.in/metakeule/loop.v4"
 )
 
 var (
@@ -39,7 +40,7 @@ func main() {
 	var id = rand.New(rand.NewSource(time.Now().UnixNano())).Int()
 
 	var logger = log.New()
-	client := client.NewContactConnection(id, logger, conn)
+	client := client.NewClient(id, logger, conn)
 	defer client.CloseConn()
 
 	app.Commands = []cli.Command{
@@ -48,12 +49,19 @@ func main() {
 			Aliases: []string{"c"},
 			Usage:   "call",
 			Action: func(c *cli.Context) error {
-				txt := c.Args().First()
-				if len(txt) == 0 {
-					txt = "Howdy from the Client"
+				filepath := c.Args().First()
+				f, err := os.Open(filepath)
+				if err != nil {
+					return err
 				}
-				r := loop.New([]byte(txt))
-				err := client.Call(context.Background(), r)
+
+				streamer, format, err := mp3.Decode(f)
+				if err != nil {
+					return err
+				}
+				defer streamer.Close()
+
+				err = client.Call(context.Background(), streamer, format)
 				if err != nil {
 					return err
 				}

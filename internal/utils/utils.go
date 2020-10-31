@@ -3,6 +3,8 @@ package utils
 import (
 	"log"
 	"net"
+
+	call "github.com/aleitner/spacialPhone/internal/protobuf"
 )
 
 // Get preferred outbound ip of this machine
@@ -16,4 +18,16 @@ func GetOutboundIP() net.IP {
 	localAddr := conn.LocalAddr().(*net.UDPAddr)
 
 	return localAddr.IP
+}
+
+func ToGRPCSampleRate(samples [][2]float64, numSamples int) []*call.Sample {
+	grpcSamples := make([]*call.Sample, numSamples)
+	for i := 0; i < numSamples; i++ {
+		grpcSamples[i] = &call.Sample{
+			LeftChannel:  samples[i][0],
+			RightChannel: samples[i][1],
+		}
+	}
+
+	return grpcSamples
 }

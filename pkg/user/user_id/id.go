@@ -18,7 +18,7 @@ func (id ID) String() string {
 	return strconv.Itoa(id.toInt())
 }
 
-func NewIDFromString(id string) (ID, error) {
+func IDFromString(id string) (ID, error) {
 	n, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		return 0, nil
@@ -27,7 +27,7 @@ func NewIDFromString(id string) (ID, error) {
 	return ID(n), nil
 }
 
-func NewIDFromMetaData(ctx context.Context) (ID, error) {
+func IDFromMetaData(ctx context.Context) (ID, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return 0, fmt.Errorf("Failed to retrieve incoming context")
@@ -39,7 +39,7 @@ func NewIDFromMetaData(ctx context.Context) (ID, error) {
 		return 0, fmt.Errorf("Failed to retrieve incoming id")
 	}
 
-	contactID, err := NewIDFromString(IDAsString[0])
+	contactID, err := IDFromString(IDAsString[0])
 	if err != nil {
 		return 0, fmt.Errorf("Failed to parse incoming id: %s", err.Error())
 	}
