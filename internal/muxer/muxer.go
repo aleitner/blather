@@ -3,6 +3,11 @@ package muxer
 import (
 	"sync"
 
+	"github.com/aleitner/spacialPhone/internal/muxer/queue"
+
+	"github.com/aleitner/spacialPhone/internal/muxer/queue/strmr"
+	"github.com/aleitner/spacialPhone/internal/utils"
+
 	call "github.com/aleitner/spacialPhone/internal/protobuf"
 
 	"github.com/aleitner/spacialPhone/pkg/user/userid"
@@ -21,7 +26,21 @@ func NewMuxer(logger *log.Logger) *Muxer {
 	}
 }
 
-func (m *Muxer) Add(id userid.ID, data *call.CallData) {
+func (m *Muxer) Add(data *call.CallData) {
+	// Todo: We need to also think about storing other data
+	userMetaData := data.GetUserMetaData()
+	audioData := data.GetAudioData()
+	grpcSamples := audioData.GetSamples()
+	numSamples := int(audioData.GetNumSamples())
+	id := userMetaData.GetId()
+
+	samples := utils.ToSampleRate(grpcSamples, numSamples)
+	streamer := strmr.NewStreamer(samples, numSamples)
+
+	newQ := queue.NewQueue(m.logger)
+	q, _ := m.streamerQueues.LoadOrStore(id, newQ)
+	q.(*queue.Queue).Add(streamer)
+	m.streamerQueues.Store(id, q)
 }
 
 func (m *Muxer) Delete(id userid.ID) {

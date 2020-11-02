@@ -1,12 +1,34 @@
 package queue
 
-import "github.com/aleitner/spacialPhone/internal/muxer/queue/strmr"
+import (
+	"sync"
+
+	"github.com/aleitner/spacialPhone/internal/muxer/queue/strmr"
+	log "github.com/sirupsen/logrus"
+)
 
 type Queue struct {
+	logger    *log.Logger
+	mtx       sync.Mutex
 	streamers []*strmr.Streamer
 }
 
+func NewQueue(logger *log.Logger) *Queue {
+	return &Queue{
+		logger:    logger,
+		streamers: make([]*strmr.Streamer, 0),
+	}
+}
+
+func (q *Queue) Add(streamer *strmr.Streamer) {
+	q.mtx.Lock()
+	defer q.mtx.Unlock()
+	q.streamers = append(q.streamers, streamer)
+}
+
 func (q *Queue) Stream(samples [][2]float64) (n int, ok bool) {
+	q.mtx.Lock()
+	defer q.mtx.Unlock()
 	// We use the filled variable to track how many samples we've
 	// successfully filled already. We loop until all samples are filled.
 	filled := 0

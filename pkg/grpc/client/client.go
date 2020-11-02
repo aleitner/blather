@@ -2,13 +2,11 @@ package client
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"strconv"
 	"sync"
 
 	"github.com/aleitner/spacialPhone/internal/muxer"
-	"github.com/aleitner/spacialPhone/internal/muxer/queue/strmr"
 	call "github.com/aleitner/spacialPhone/internal/protobuf"
 	"github.com/aleitner/spacialPhone/internal/utils"
 	"github.com/aleitner/spacialPhone/pkg/user/coordinates"
@@ -68,7 +66,7 @@ func (client *Client) Call(ctx context.Context, audioInput beep.Streamer, format
 				break
 			}
 
-			err = stream.Send(&call.CallData{
+			if err := stream.Send(&call.CallData{
 				AudioData: &call.AudioData{
 					AudioEncoding: "mp3",
 					Samples:       utils.ToGRPCSampleRate(buf, numSamples),
@@ -83,23 +81,17 @@ func (client *Client) Call(ctx context.Context, audioInput beep.Streamer, format
 					Id:          uint64(client.id),
 					Coordinates: client.coordinate.ToGRPC(),
 				},
-			})
-			if err != nil {
-				// server returns with nil
-				if err != io.EOF {
-					client.logger.Errorf("stream Send fail: %s/n", err)
-				}
-
-				break
+			}); err != nil {
+				client.logger.Errorf("stream Send fail: %s/n", err)
 			}
 		}
 
-		err := stream.CloseSend()
-		if err != nil {
+		if err := stream.CloseSend(); err != nil {
 			client.logger.Errorf("close send fail: %s\n", err)
 		}
+
 		wg.Done()
-		client.logger.Errorf("Finished sending data...\n", err)
+		client.logger.Errorf("Finished sending data...\n")
 	}()
 	wg.Add(1)
 
@@ -108,20 +100,14 @@ func (client *Client) Call(ctx context.Context, audioInput beep.Streamer, format
 		for {
 			res, err := stream.Recv()
 			if err != nil {
-				if err != io.EOF {
-					log.Fatalf("stream Recv fail: %s/n", err)
+				if err == io.EOF {
+					break
 				}
-				break
+				client.logger.Errorf("stream Recv fail: %s/n", err)
 			}
 
-			audioData := res.GetAudioData()
-			grpcSamples := audioData.GetSamples()
-			numSamples := int(audioData.GetNumSamples())
-			samples := utils.ToSampleRate(grpcSamples, numSamples)
-			streamer := strmr.NewStreamer(samples, numSamples)
-			// add stream to queue
-			// add queue to muxer sync map
-			fmt.Printf("%d: %+v\n", res.GetUserMetaData().GetId(), res.GetAudioData())
+			// Add audio data to muxer
+			client.muxer.Add(res)
 		}
 
 		wg.Done()
