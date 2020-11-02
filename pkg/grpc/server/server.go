@@ -8,7 +8,7 @@ import (
 
 	"github.com/aleitner/spacialPhone/internal/forwarder"
 	call "github.com/aleitner/spacialPhone/internal/protobuf"
-	"github.com/aleitner/spacialPhone/pkg/user/user_id"
+	"github.com/aleitner/spacialPhone/pkg/user/userid"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -29,7 +29,7 @@ func NewCallServer(logger *log.Logger) call.PhoneServer {
 // Call gets a stream of audio data from the client and forwards it to the other clients
 func (cs *CallServer) Call(stream call.Phone_CallServer) error {
 	// Get id from client
-	clientID, err := user_id.IDFromMetaData(stream.Context())
+	clientID, err := userid.IDFromMetaData(stream.Context())
 	if err != nil {
 		return fmt.Errorf("Failed to retrieve incoming client id")
 	}

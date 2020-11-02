@@ -7,13 +7,12 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/aleitner/spacialPhone/internal/utils"
-
-	"github.com/faiface/beep"
-
 	"github.com/aleitner/spacialPhone/internal/muxer"
+	"github.com/aleitner/spacialPhone/internal/muxer/queue/strmr"
 	call "github.com/aleitner/spacialPhone/internal/protobuf"
+	"github.com/aleitner/spacialPhone/internal/utils"
 	"github.com/aleitner/spacialPhone/pkg/user/coordinates"
+	"github.com/faiface/beep"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -100,6 +99,7 @@ func (client *Client) Call(ctx context.Context, audioInput beep.Streamer, format
 			client.logger.Errorf("close send fail: %s\n", err)
 		}
 		wg.Done()
+		client.logger.Errorf("Finished sending data...\n", err)
 	}()
 	wg.Add(1)
 
@@ -114,6 +114,13 @@ func (client *Client) Call(ctx context.Context, audioInput beep.Streamer, format
 				break
 			}
 
+			audioData := res.GetAudioData()
+			grpcSamples := audioData.GetSamples()
+			numSamples := int(audioData.GetNumSamples())
+			samples := utils.ToSampleRate(grpcSamples, numSamples)
+			streamer := strmr.NewStreamer(samples, numSamples)
+			// add stream to queue
+			// add queue to muxer sync map
 			fmt.Printf("%d: %+v\n", res.GetUserMetaData().GetId(), res.GetAudioData())
 		}
 

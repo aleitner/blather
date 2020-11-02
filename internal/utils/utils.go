@@ -31,3 +31,14 @@ func ToGRPCSampleRate(samples [][2]float64, numSamples int) []*call.Sample {
 
 	return grpcSamples
 }
+
+func ToSampleRate(grpcSamples []*call.Sample, numSamples int) [][2]float64 {
+	samples := make([][2]float64, numSamples)
+
+	for i := 0; i < numSamples; i++ {
+		samples[i][0] = grpcSamples[i].GetLeftChannel()
+		samples[i][1] = grpcSamples[i].GetRightChannel()
+	}
+
+	return samples
+}

@@ -4,7 +4,7 @@ import (
 	"sync"
 
 	call "github.com/aleitner/spacialPhone/internal/protobuf"
-	"github.com/aleitner/spacialPhone/pkg/user/user_id"
+	"github.com/aleitner/spacialPhone/pkg/user/userid"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -25,7 +25,7 @@ func NewForwarder() *Forwarder {
 }
 
 // Forward will forward the data from id
-func (f *Forwarder) Forward(id user_id.ID, data *call.CallData) {
+func (f *Forwarder) Forward(id userid.ID, data *call.CallData) {
 	var wg sync.WaitGroup // NB: We probably don't actually need this wait group
 
 	f.transferAgents.Range(func(key interface{}, value interface{}) bool {
@@ -34,7 +34,7 @@ func (f *Forwarder) Forward(id user_id.ID, data *call.CallData) {
 		go func() {
 			defer wg.Done()
 
-			streamId := key.(user_id.ID)
+			streamId := key.(userid.ID)
 			stream := value.(TransferAgent)
 
 			if streamId == id { // Don't need to forward data back to sender
@@ -64,11 +64,11 @@ func (f Forwarder) ConnectionCount() int {
 }
 
 // Add a transferAgent by id
-func (f *Forwarder) Add(id user_id.ID, stream TransferAgent) {
+func (f *Forwarder) Add(id userid.ID, stream TransferAgent) {
 	f.transferAgents.Store(id, stream)
 }
 
 // Delete a transferAgent by id
-func (f *Forwarder) Delete(id user_id.ID) {
+func (f *Forwarder) Delete(id userid.ID) {
 	f.transferAgents.Delete(id)
 }

@@ -1,4 +1,4 @@
-package user_id
+package userid
 
 import (
 	"context"
