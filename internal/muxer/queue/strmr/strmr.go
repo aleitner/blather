@@ -9,6 +9,14 @@ type Streamer struct {
 }
 
 func NewStreamer(samples [][2]float64, numSamples int) *Streamer {
+	if numSamples <= 0 {
+		return nil
+	}
+
+	if numSamples > len(samples) {
+		numSamples = len(samples)
+	}
+
 	return &Streamer{
 		samples:    samples,
 		numSamples: numSamples,
