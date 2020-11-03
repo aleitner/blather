@@ -29,30 +29,31 @@ func (q *Queue) Add(streamer *strmr.Streamer) {
 func (q *Queue) Stream(samples [][2]float64) (n int, ok bool) {
 	q.mtx.Lock()
 	defer q.mtx.Unlock()
-	// We use the filled variable to track how many samples we've
-	// successfully filled already. We loop until all samples are filled.
+
 	filled := 0
 	for filled < len(samples) {
-		// There are no streamers in the queue, so we stream silence.
 		if len(q.streamers) == 0 {
-			for i := range samples[filled:] {
-				samples[i][0] = 0
-				samples[i][1] = 0
-			}
 			break
 		}
 
-		// We stream from the first streamer in the queue.
-		n, ok := q.streamers[0].Stream(samples[filled:])
-		// If it's drained, we pop it from the queue, thus continuing with
-		// the next streamer.
+		toStream := len(samples) - filled
+		buf := make([][2]float64, toStream)
+
+		// NB: See if we can find a way to write directly into buf at different points
+		// We are currently making two copies of the same thing which is not performant
+		n, ok = q.streamers[0].Stream(buf)
 		if !ok {
 			q.streamers = q.streamers[1:]
 		}
-		// We update the number of filled samples.
+
+		for i := 0; i < n; i++ {
+			samples[i] = buf[i]
+		}
+
 		filled += n
 	}
-	return len(samples), true
+
+	return filled, filled > 0
 }
 
 func (q *Queue) Err() error {

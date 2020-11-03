@@ -5,12 +5,14 @@ import (
 	"io"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/aleitner/spacialPhone/internal/muxer"
 	call "github.com/aleitner/spacialPhone/internal/protobuf"
 	"github.com/aleitner/spacialPhone/internal/utils"
 	"github.com/aleitner/spacialPhone/pkg/user/coordinates"
 	"github.com/faiface/beep"
+	"github.com/faiface/beep/speaker"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -45,6 +47,9 @@ func (client *Client) Call(ctx context.Context, audioInput beep.Streamer, format
 	clientId := strconv.Itoa(client.id)
 	md := metadata.Pairs("client-id", clientId)
 	ctx = metadata.NewOutgoingContext(ctx, md)
+
+	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
+	//speaker.Play(client.muxer)
 
 	stream, err := client.route.Call(ctx)
 	if err != nil {
