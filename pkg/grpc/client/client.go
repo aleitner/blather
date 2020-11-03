@@ -5,7 +5,6 @@ import (
 	"io"
 	"strconv"
 	"sync"
-	"time"
 
 	"github.com/aleitner/spacialPhone/internal/muxer"
 	call "github.com/aleitner/spacialPhone/internal/protobuf"
@@ -48,8 +47,8 @@ func (client *Client) Call(ctx context.Context, audioInput beep.Streamer, format
 	md := metadata.Pairs("client-id", clientId)
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
-	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
-	//speaker.Play(client.muxer)
+	speaker.Init(format.SampleRate, 512)
+	speaker.Play(client.muxer)
 
 	stream, err := client.route.Call(ctx)
 	if err != nil {
@@ -61,7 +60,8 @@ func (client *Client) Call(ctx context.Context, audioInput beep.Streamer, format
 	// Send data
 	go func() {
 		for {
-			buf := make([][2]float64, 1024*64) // Optimal sending size is 16KiB-64KiB
+			sampleRate := 512
+			buf := make([][2]float64, sampleRate) // Optimal sending size is 16KiB-64KiB
 			numSamples, ok := audioInput.Stream(buf)
 			if !ok {
 				// server returns with nil
@@ -77,7 +77,7 @@ func (client *Client) Call(ctx context.Context, audioInput beep.Streamer, format
 					Samples:       utils.ToGRPCSampleRate(buf, numSamples),
 					NumSamples:    int32(numSamples),
 					Format: &call.Format{
-						SampleRate:  0,
+						SampleRate:  uint32(sampleRate),
 						NumChannels: uint32(format.NumChannels),
 						Precision:   uint32(format.Precision),
 					},
@@ -91,9 +91,9 @@ func (client *Client) Call(ctx context.Context, audioInput beep.Streamer, format
 			}
 		}
 
-		if err := stream.CloseSend(); err != nil {
-			client.logger.Errorf("close send fail: %s\n", err)
-		}
+		//if err := stream.CloseSend(); err != nil {
+		//	client.logger.Errorf("close send fail: %s\n", err)
+		//}
 
 		wg.Done()
 		client.logger.Errorf("Finished sending data...\n")
