@@ -38,7 +38,7 @@ func (f *Forwarder) Forward(id userid.ID, data *call.CallData) {
 			stream := value.(TransferAgent)
 
 			if streamId == id { // Don't need to forward data back to sender
-				//return
+				return
 			}
 
 			if err := stream.Send(data); err != nil {
