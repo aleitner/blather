@@ -3,10 +3,8 @@ module github.com/aleitner/blather
 go 1.15
 
 require (
-	github.com/MarkKremer/microphone v1.1.0
 	github.com/faiface/beep v1.0.2
-	github.com/golang/protobuf v1.4.3
-	github.com/gordonklaus/portaudio v0.0.0-20200911161147-bb74aa485641 // indirect
+	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/hajimehoshi/go-mp3 v0.3.1 // indirect
 	github.com/sirupsen/logrus v1.7.0
 	github.com/stretchr/testify v1.3.0

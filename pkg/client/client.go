@@ -47,7 +47,7 @@ func (client *Client) Call(ctx context.Context, audioInput beep.Streamer, format
 	md := metadata.Pairs("client-id", clientId)
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
-	speaker.Init(format.SampleRate, 512)
+	speaker.Init(format.SampleRate, 4096)
 	speaker.Play(client.muxer)
 
 	stream, err := client.route.Call(ctx)

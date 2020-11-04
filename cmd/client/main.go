@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/MarkKremer/microphone"
+	"github.com/faiface/beep/mp3"
 	"github.com/aleitner/blather/pkg/client"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
@@ -48,19 +48,16 @@ func main() {
 			Aliases: []string{"c"},
 			Usage:   "call",
 			Action: func(c *cli.Context) error {
-				err := microphone.Init()
+				filepath := c.Args().First()
+				f, err := os.Open(filepath)
 				if err != nil {
 					return err
 				}
-				defer microphone.Terminate()
 
-				streamer, format, err := microphone.OpenDefaultStream(44100, 2)
+				streamer, format, err := mp3.Decode(f)
 				if err != nil {
-					return fmt.Errorf("Failed to open default stream: %s", err)
+					return err
 				}
-
-				// Close the stream at the end if it hasn't already been
-				// closed explicitly.
 				defer streamer.Close()
 
 				err = client.Call(context.Background(), streamer, format)
