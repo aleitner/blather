@@ -3,7 +3,7 @@ package coordinates
 import (
 	"math"
 
-	call "github.com/aleitner/spacialPhone/internal/protobuf"
+	call "github.com/aleitner/spacialPhone/pkg/protobuf"
 )
 
 type Coordinate struct {

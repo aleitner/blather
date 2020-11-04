@@ -3,8 +3,8 @@ package forwarder
 import (
 	"sync"
 
-	call "github.com/aleitner/spacialPhone/internal/protobuf"
-	"github.com/aleitner/spacialPhone/pkg/user/userid"
+	call "github.com/aleitner/spacialPhone/pkg/protobuf"
+	"github.com/aleitner/spacialPhone/pkg/userid"
 	log "github.com/sirupsen/logrus"
 )
 

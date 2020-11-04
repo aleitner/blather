@@ -27,7 +27,7 @@ func IDFromString(id string) (ID, error) {
 	return ID(n), nil
 }
 
-func IDFromMetaData(ctx context.Context) (ID, error) {
+func IDFromContextMetaData(ctx context.Context) (ID, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return 0, fmt.Errorf("Failed to retrieve incoming context")

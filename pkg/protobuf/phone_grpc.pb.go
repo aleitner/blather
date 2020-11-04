@@ -160,5 +160,5 @@ var _Phone_serviceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "internal/protobuf/phone.proto",
+	Metadata: "pkg/protobuf/phone.proto",
 }

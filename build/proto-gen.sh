@@ -1,2 +1,2 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-protoc --proto_path=$DIR/.. --go_out=$DIR/../internal/protobuf --go-grpc_out=require_unimplemented_servers=false:$DIR/../internal/protobuf $DIR/../internal/protobuf/*.proto
+protoc --proto_path=$DIR/.. --go_out=$DIR/../pkg/protobuf --go-grpc_out=require_unimplemented_servers=false:$DIR/../pkg/protobuf $DIR/../pkg/protobuf/*.proto

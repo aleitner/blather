@@ -3,7 +3,7 @@ package queue
 import (
 	"sync"
 
-	"github.com/aleitner/spacialPhone/internal/muxer/queue/strmr"
+	"github.com/aleitner/spacialPhone/pkg/muxer/queue/strmr"
 )
 
 type Queue struct {

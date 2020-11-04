@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/aleitner/spacialPhone/internal/muxer"
-	call "github.com/aleitner/spacialPhone/internal/protobuf"
 	"github.com/aleitner/spacialPhone/internal/utils"
-	"github.com/aleitner/spacialPhone/pkg/user/coordinates"
+	"github.com/aleitner/spacialPhone/pkg/coordinates"
+	"github.com/aleitner/spacialPhone/pkg/muxer"
+	call "github.com/aleitner/spacialPhone/pkg/protobuf"
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/speaker"
 	log "github.com/sirupsen/logrus"
@@ -75,7 +75,7 @@ func (client *Client) Call(ctx context.Context, audioInput beep.Streamer, format
 				AudioData: &call.AudioData{
 					AudioEncoding: "mp3",
 					Samples:       utils.ToGRPCSampleRate(buf, numSamples),
-					NumSamples:    int32(numSamples),
+					NumSamples:    uint32(numSamples),
 					Format: &call.Format{
 						SampleRate:  uint32(sampleRate),
 						NumChannels: uint32(format.NumChannels),

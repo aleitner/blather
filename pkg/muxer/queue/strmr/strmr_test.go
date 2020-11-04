@@ -3,7 +3,7 @@ package strmr_test
 import (
 	"testing"
 
-	"github.com/aleitner/spacialPhone/internal/muxer/queue/strmr"
+	"github.com/aleitner/spacialPhone/pkg/muxer/queue/strmr"
 	"github.com/stretchr/testify/assert"
 )
 
