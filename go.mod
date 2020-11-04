@@ -1,4 +1,4 @@
-module github.com/aleitner/spacialPhone
+module github.com/aleitner/blather
 
 go 1.15
 
