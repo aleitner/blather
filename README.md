@@ -3,9 +3,8 @@ Library for making group calls that have spacial awareness
 
 ## TODO
 - [x] Stream audio to server
-- [x] Add received audio to streaming Queue on client
-- [x] Read Audio from streaming mixer
-- [ ] Mix all input sources together
+- [x] Stream audio from server to clients
+- [x] Combine all input sources into single stream
 - [ ] Change volume depending on distance
 - [ ] Pan audio depending on location
 - [ ] Front end
