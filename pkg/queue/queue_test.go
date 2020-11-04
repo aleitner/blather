@@ -3,8 +3,8 @@ package queue_test
 import (
 	"testing"
 
-	"github.com/aleitner/blather/pkg/muxer/queue"
-	"github.com/aleitner/blather/pkg/muxer/queue/strmr"
+	"github.com/aleitner/blather/pkg/queue"
+	"github.com/aleitner/blather/pkg/strmr"
 	"github.com/stretchr/testify/assert"
 )
 

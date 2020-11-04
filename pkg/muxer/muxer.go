@@ -3,12 +3,12 @@ package muxer
 import (
 	"sync"
 
-	"github.com/faiface/beep"
-	"github.com/aleitner/blather/pkg/muxer/queue"
 	"github.com/aleitner/blather/internal/utils"
-	"github.com/aleitner/blather/pkg/muxer/queue/strmr"
 	"github.com/aleitner/blather/pkg/protobuf"
+	"github.com/aleitner/blather/pkg/queue"
+	"github.com/aleitner/blather/pkg/strmr"
 	"github.com/aleitner/blather/pkg/userid"
+	"github.com/faiface/beep"
 	log "github.com/sirupsen/logrus"
 )
 

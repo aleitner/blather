@@ -3,7 +3,7 @@ package queue
 import (
 	"sync"
 
-	"github.com/aleitner/blather/pkg/muxer/queue/strmr"
+	"github.com/aleitner/blather/pkg/strmr"
 )
 
 type Queue struct {
