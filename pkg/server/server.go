@@ -3,31 +3,36 @@ package server
 import (
 	"context"
 	"fmt"
+	"google.golang.org/grpc"
 	"io"
 	"sync"
 
 	"github.com/aleitner/blather/pkg/forwarder"
-	call "github.com/aleitner/blather/pkg/protobuf"
+	"github.com/aleitner/blather/pkg/protobuf"
 	"github.com/aleitner/blather/pkg/userid"
 	log "github.com/sirupsen/logrus"
 )
 
-// CallServer forwards call data to all the clients
-type CallServer struct {
+// BlatherServer forwards call data to all the clients
+type BlatherServer struct {
 	logger    *log.Logger
 	forwarder *forwarder.Forwarder
 }
 
-// NewCallServer
-func NewCallServer(logger *log.Logger) call.PhoneServer {
-	return &CallServer{
+// NewBlatherServer
+func NewBlatherServer(logger *log.Logger) blatherpb.PhoneServer {
+	return &BlatherServer{
 		logger:    logger,
 		forwarder: forwarder.NewForwarder(),
 	}
 }
 
+func RegisterBlatherServer(registrar grpc.ServiceRegistrar, server blatherpb.PhoneServer) {
+	blatherpb.RegisterPhoneServer(registrar, server)
+}
+
 // Call gets a stream of audio data from the client and forwards it to the other clients
-func (cs *CallServer) Call(stream call.Phone_CallServer) error {
+func (bs *BlatherServer) Call(stream blatherpb.Phone_CallServer) error {
 	// Get id from client
 	clientID, err := userid.IDFromContextMetaData(stream.Context())
 	if err != nil {
@@ -35,8 +40,8 @@ func (cs *CallServer) Call(stream call.Phone_CallServer) error {
 	}
 
 	// Create forwarder for client
-	cs.forwarder.Add(clientID, stream)
-	defer cs.forwarder.Delete(clientID)
+	bs.forwarder.Add(clientID, stream)
+	defer bs.forwarder.Delete(clientID)
 
 	var wg sync.WaitGroup // NB: we can probably just use a channel here
 
@@ -47,14 +52,14 @@ func (cs *CallServer) Call(stream call.Phone_CallServer) error {
 			data, err := stream.Recv()
 			if err != nil {
 				if err != io.EOF {
-					cs.logger.Error(err.Error())
+					bs.logger.Error(err.Error())
 				}
 
 				break
 			}
 
 			// Forward the data to the other clients
-			cs.forwarder.Forward(clientID, data)
+			bs.forwarder.Forward(clientID, data)
 		}
 
 		wg.Done()
@@ -65,6 +70,6 @@ func (cs *CallServer) Call(stream call.Phone_CallServer) error {
 	return nil
 }
 
-func (cs *CallServer) UpdateSettings(context.Context, *call.UserSettingsData) (*call.UserSettingsResponse, error) {
+func (bs *BlatherServer) UpdateSettings(context.Context, *blatherpb.UserSettingsData) (*blatherpb.UserSettingsResponse, error) {
 	return nil, nil
 }

@@ -6,7 +6,6 @@ import (
 	"net"
 	"os"
 
-	call "github.com/aleitner/blather/pkg/protobuf"
 	"github.com/aleitner/blather/pkg/server"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -35,8 +34,8 @@ func main() {
 	grpcServer := grpc.NewServer()
 
 	logger := log.New()
-	s := server.NewCallServer(logger)
-	call.RegisterPhoneServer(grpcServer, s)
+	s := server.NewBlatherServer(logger)
+	server.RegisterBlatherServer(grpcServer, s)
 
 	defer grpcServer.GracefulStop()
 	err = grpcServer.Serve(lis)

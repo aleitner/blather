@@ -9,7 +9,7 @@ import (
 	"github.com/aleitner/blather/internal/utils"
 	"github.com/aleitner/blather/pkg/coordinates"
 	"github.com/aleitner/blather/pkg/muxer"
-	call "github.com/aleitner/blather/pkg/protobuf"
+	"github.com/aleitner/blather/pkg/protobuf"
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/speaker"
 	log "github.com/sirupsen/logrus"
@@ -25,7 +25,7 @@ type CallClient interface {
 type Client struct {
 	id         int
 	logger     *log.Logger
-	route      call.PhoneClient
+	route      blatherpb.PhoneClient
 	conn       *grpc.ClientConn
 	coordinate *coordinates.Coordinate
 	muxer      *muxer.Muxer
@@ -36,7 +36,7 @@ func NewClient(id int, logger *log.Logger, conn *grpc.ClientConn) CallClient {
 		id:         id,
 		logger:     logger,
 		conn:       conn,
-		route:      call.NewPhoneClient(conn),
+		route:      blatherpb.NewPhoneClient(conn),
 		muxer:      muxer.NewMuxer(logger),
 		coordinate: &coordinates.Coordinate{X: 0, Y: 0, Z: 0},
 	}
@@ -71,18 +71,18 @@ func (client *Client) Call(ctx context.Context, audioInput beep.Streamer, format
 				break
 			}
 
-			if err := stream.Send(&call.CallData{
-				AudioData: &call.AudioData{
+			if err := stream.Send(&blatherpb.CallData{
+				AudioData: &blatherpb.AudioData{
 					AudioEncoding: "mp3",
 					Samples:       utils.ToGRPCSampleRate(buf, numSamples),
 					NumSamples:    uint32(numSamples),
-					Format: &call.Format{
+					Format: &blatherpb.Format{
 						SampleRate:  uint32(sampleRate),
 						NumChannels: uint32(format.NumChannels),
 						Precision:   uint32(format.Precision),
 					},
 				},
-				UserMetaData: &call.UserMetaData{
+				UserMetaData: &blatherpb.UserMetaData{
 					Id:          uint64(client.id),
 					Coordinates: client.coordinate.ToGRPC(),
 				},

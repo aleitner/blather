@@ -1,7 +1,7 @@
 syntax = "proto3";
-option go_package = ".;phone";
+option go_package = ".;blatherpb";
 
-package phone;
+package blatherpb;
 
 service Phone {
     rpc Call (stream CallData) returns (stream CallData);

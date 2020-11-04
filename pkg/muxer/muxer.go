@@ -4,14 +4,10 @@ import (
 	"sync"
 
 	"github.com/faiface/beep"
-
 	"github.com/aleitner/blather/pkg/muxer/queue"
-
 	"github.com/aleitner/blather/internal/utils"
 	"github.com/aleitner/blather/pkg/muxer/queue/strmr"
-
-	call "github.com/aleitner/blather/pkg/protobuf"
-
+	"github.com/aleitner/blather/pkg/protobuf"
 	"github.com/aleitner/blather/pkg/userid"
 	log "github.com/sirupsen/logrus"
 )
@@ -28,7 +24,7 @@ func NewMuxer(logger *log.Logger) *Muxer {
 	}
 }
 
-func (m *Muxer) Add(data *call.CallData) {
+func (m *Muxer) Add(data *blatherpb.CallData) {
 	// Todo: We need to also think about storing other data
 	userMetaData := data.GetUserMetaData()
 	audioData := data.GetAudioData()
