@@ -14,11 +14,18 @@ import (
 // Muxer
 type Muxer struct {
 	streamerQueues sync.Map
+
+	mtx sync.Mutex
+	streamerCount int
 }
 
 func NewMuxer() *Muxer {
 	return &Muxer{
 	}
+}
+
+func (m Muxer)Len() int {
+	return m.streamerCount
 }
 
 func (m *Muxer) Add(data *blatherpb.CallData) {
@@ -36,19 +43,59 @@ func (m *Muxer) Add(data *blatherpb.CallData) {
 	q, _ := m.streamerQueues.LoadOrStore(id, newQ)
 	q.(*queue.Queue).Add(streamer)
 	m.streamerQueues.Store(id, q)
+
+	m.mtx.Lock()
+	defer m.mtx.Unlock()
+	m.streamerCount++
 }
 
 func (m *Muxer) Delete(id userid.ID) {
 	m.streamerQueues.Delete(id)
+
+	m.mtx.Lock()
+	defer m.mtx.Unlock()
+	m.streamerCount--
 }
 
 func (m *Muxer) Stream(samples [][2]float64) (n int, ok bool) {
-	m.streamerQueues.Range(func(key interface{}, value interface{}) bool {
-		st := value.(beep.Streamer)
-		n, ok = st.Stream(samples)
+	streamedCount := make(map[userid.ID]int, m.Len())
+	var tmp [512][2]float64
 
-		return false
-	})
+	toStream := len(tmp)
+	if toStream > len(samples) {
+		toStream = len(samples)
+	}
+
+	// clear the samples
+	for i := range samples[:toStream] {
+		samples[i] = [2]float64{}
+	}
+
+	for m.Len() > 0{
+		m.streamerQueues.Range(func(key interface{}, value interface{}) bool {
+			st := value.(beep.Streamer)
+			id := userid.ID(key.(uint64))
+			// mix the stream
+			sn, sok := st.Stream(tmp[:toStream])
+			for i := range tmp[:sn] {
+				samples[i][0] += tmp[i][0]
+				samples[i][1] += tmp[i][1]
+			}
+
+			if !sok {
+				// remove drained streamer
+				m.Delete(id)
+			}
+
+			streamedCount[id] += sn
+
+			if streamedCount[id] > n {
+				n = streamedCount[id]
+			}
+			return true
+		})
+	}
+
 	return n, true
 }
 
