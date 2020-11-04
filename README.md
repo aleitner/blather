@@ -1,4 +1,4 @@
-# Spacial Phone [![GoDoc](https://godoc.org/github.com/nitishm/go-rejson?status.svg)](https://pkg.go.dev/github.com/aleitner/spacial_call)
+# Spacial Phone
 Library for making group calls that have spacial awareness
 
 ## TODO
