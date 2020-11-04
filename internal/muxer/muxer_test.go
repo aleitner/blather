@@ -7,6 +7,6 @@ import (
 func TestMuxer(t *testing.T) {
 
 	{ // Perfect Scenario
-		
+
 	}
 }
