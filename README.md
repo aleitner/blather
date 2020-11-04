@@ -1,4 +1,4 @@
-# Blather [![PkgGoDev](https://pkg.go.dev/badge/aleitner/blather)](https://pkg.go.dev/aleitner/blather)
+# Blather [![PkgGoDev](https://pkg.go.dev/badge/github.com/aleitner/blather)](https://pkg.go.dev/github.com/aleitner/blather)
 Library for making group calls that have spacial awareness
 
 ## TODO
