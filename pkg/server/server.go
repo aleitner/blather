@@ -6,9 +6,9 @@ import (
 	"io"
 	"sync"
 
-	"github.com/aleitner/spacialPhone/pkg/forwarder"
-	call "github.com/aleitner/spacialPhone/pkg/protobuf"
-	"github.com/aleitner/spacialPhone/pkg/userid"
+	"github.com/aleitner/blather/pkg/forwarder"
+	call "github.com/aleitner/blather/pkg/protobuf"
+	"github.com/aleitner/blather/pkg/userid"
 	log "github.com/sirupsen/logrus"
 )
 

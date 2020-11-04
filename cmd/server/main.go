@@ -6,8 +6,8 @@ import (
 	"net"
 	"os"
 
-	call "github.com/aleitner/spacialPhone/pkg/protobuf"
-	"github.com/aleitner/spacialPhone/pkg/server"
+	call "github.com/aleitner/blather/pkg/protobuf"
+	"github.com/aleitner/blather/pkg/server"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )

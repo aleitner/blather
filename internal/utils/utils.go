@@ -4,7 +4,7 @@ import (
 	"log"
 	"net"
 
-	call "github.com/aleitner/spacialPhone/pkg/protobuf"
+	call "github.com/aleitner/blather/pkg/protobuf"
 )
 
 // Get preferred outbound ip of this machine

@@ -10,7 +10,7 @@ import (
 
 	"github.com/faiface/beep/mp3"
 
-	"github.com/aleitner/spacialPhone/pkg/client"
+	"github.com/aleitner/blather/pkg/client"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 	"google.golang.org/grpc"

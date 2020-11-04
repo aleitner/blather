@@ -5,14 +5,14 @@ import (
 
 	"github.com/faiface/beep"
 
-	"github.com/aleitner/spacialPhone/pkg/muxer/queue"
+	"github.com/aleitner/blather/pkg/muxer/queue"
 
-	"github.com/aleitner/spacialPhone/internal/utils"
-	"github.com/aleitner/spacialPhone/pkg/muxer/queue/strmr"
+	"github.com/aleitner/blather/internal/utils"
+	"github.com/aleitner/blather/pkg/muxer/queue/strmr"
 
-	call "github.com/aleitner/spacialPhone/pkg/protobuf"
+	call "github.com/aleitner/blather/pkg/protobuf"
 
-	"github.com/aleitner/spacialPhone/pkg/userid"
+	"github.com/aleitner/blather/pkg/userid"
 	log "github.com/sirupsen/logrus"
 )
 
