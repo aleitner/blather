@@ -104,4 +104,35 @@ func TestMuxer(t *testing.T) {
 		assert.True(t, ok)
 		assert.Equal(t, 0, n)
 	}
+
+	{ // Properly Mix Audio of varying lengths
+		m := muxer.NewMuxer()
+		samples1 := [][2]float64{[2]float64{1,1},[2]float64{1,1},[2]float64{1,1},[2]float64{1,1}}
+		data1 := generateCallData(samples1, len(samples1), 44100, 1)
+		m.Add(data1)
+
+		samples2 := [][2]float64{[2]float64{4,4}}
+		data2 := generateCallData(samples2, len(samples2), 44100, 2)
+		m.Add(data2)
+
+		expectedSamples := [][2]float64{[2]float64{5,5}, [2]float64{1,1}, [2]float64{1,1}}
+
+		actualSamples := make([][2]float64, 3)
+		n, ok := m.Stream(actualSamples)
+		assert.True(t, ok)
+		assert.Equal(t, len(expectedSamples), n)
+		assert.Equal(t, expectedSamples, actualSamples[:n])
+
+		samples3 := [][2]float64{[2]float64{1,1}}
+		data3 := generateCallData(samples3, len(samples3), 44100, 2)
+		m.Add(data3)
+		n, ok = m.Stream(actualSamples)
+		assert.True(t, ok)
+		assert.Equal(t, 1, n)
+		assert.Equal(t, [][2]float64{[2]float64{2,2}}, actualSamples[:n])
+
+		n, ok = m.Stream(actualSamples)
+		assert.True(t, ok)
+		assert.Equal(t, 0, n)
+	}
 }

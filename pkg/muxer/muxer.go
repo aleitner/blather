@@ -71,12 +71,12 @@ func (m *Muxer) Stream(samples [][2]float64) (n int, ok bool) {
 		samples[i] = [2]float64{}
 	}
 
-	for m.Len() > 0{
+	for m.Len() > 0 && n < toStream {
 		m.streamerQueues.Range(func(key interface{}, value interface{}) bool {
 			st := value.(beep.Streamer)
 			id := userid.ID(key.(uint64))
 			// mix the stream
-			sn, sok := st.Stream(tmp[:toStream])
+			sn, sok := st.Stream(tmp[streamedCount[id]:toStream])
 			for i := range tmp[:sn] {
 				samples[i][0] += tmp[i][0]
 				samples[i][1] += tmp[i][1]
