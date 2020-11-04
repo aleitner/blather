@@ -22,6 +22,11 @@ func TestStreamer(t *testing.T) {
 		assert.Equal(t, numSamples, n)
 		assert.Equal(t, samples, actual[:n])
 		assert.True(t, ok)
+
+		n, ok = stream.Stream(actual)
+		assert.Equal(t, 0, n)
+		assert.Equal(t, [][2]float64{}, actual[:n])
+		assert.False(t, ok)
 	}
 
 	{ // Number of samples is greater than the actual number of samples
@@ -37,6 +42,11 @@ func TestStreamer(t *testing.T) {
 		assert.Equal(t, len(samples), n)
 		assert.Equal(t, samples, actual[:n])
 		assert.True(t, ok)
+
+		n, ok = stream.Stream(actual)
+		assert.Equal(t, 0, n)
+		assert.Equal(t, [][2]float64{}, actual[:n])
+		assert.False(t, ok)
 	}
 
 	{ // Number of samples to read is greater than the actual number of samples
@@ -52,6 +62,11 @@ func TestStreamer(t *testing.T) {
 		assert.Equal(t, len(samples), n)
 		assert.Equal(t, samples, actual[:n])
 		assert.True(t, ok)
+
+		n, ok = stream.Stream(actual)
+		assert.Equal(t, 0, n)
+		assert.Equal(t, [][2]float64{}, actual[:n])
+		assert.False(t, ok)
 	}
 
 	{ // Number of samples to read is less than the actual number of samples

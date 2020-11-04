@@ -39,7 +39,7 @@ func (m *Muxer) Add(data *call.CallData) {
 	samples := utils.ToSampleRate(grpcSamples, numSamples)
 	streamer := strmr.NewStreamer(samples, numSamples)
 
-	newQ := queue.NewQueue(m.logger)
+	newQ := queue.NewQueue()
 	q, _ := m.streamerQueues.LoadOrStore(id, newQ)
 	q.(*queue.Queue).Add(streamer)
 	m.streamerQueues.Store(id, q)

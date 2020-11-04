@@ -4,18 +4,15 @@ import (
 	"sync"
 
 	"github.com/aleitner/spacialPhone/internal/muxer/queue/strmr"
-	log "github.com/sirupsen/logrus"
 )
 
 type Queue struct {
-	logger    *log.Logger
 	mtx       sync.Mutex
 	streamers []*strmr.Streamer
 }
 
-func NewQueue(logger *log.Logger) *Queue {
+func NewQueue() *Queue {
 	return &Queue{
-		logger:    logger,
 		streamers: make([]*strmr.Streamer, 0),
 	}
 }
@@ -47,7 +44,7 @@ func (q *Queue) Stream(samples [][2]float64) (n int, ok bool) {
 		}
 
 		for i := 0; i < n; i++ {
-			samples[i] = buf[i]
+			samples[i+filled] = buf[i]
 		}
 
 		filled += n
