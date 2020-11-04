@@ -9,18 +9,15 @@ import (
 	"github.com/aleitner/blather/pkg/strmr"
 	"github.com/aleitner/blather/pkg/userid"
 	"github.com/faiface/beep"
-	log "github.com/sirupsen/logrus"
 )
 
 // Muxer
 type Muxer struct {
 	streamerQueues sync.Map
-	logger         *log.Logger
 }
 
-func NewMuxer(logger *log.Logger) *Muxer {
+func NewMuxer() *Muxer {
 	return &Muxer{
-		logger: logger,
 	}
 }
 

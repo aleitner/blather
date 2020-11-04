@@ -37,7 +37,7 @@ func NewClient(id int, logger *log.Logger, conn *grpc.ClientConn) CallClient {
 		logger:     logger,
 		conn:       conn,
 		route:      blatherpb.NewPhoneClient(conn),
-		muxer:      muxer.NewMuxer(logger),
+		muxer:      muxer.NewMuxer(),
 		coordinate: &coordinates.Coordinate{X: 0, Y: 0, Z: 0},
 	}
 }
