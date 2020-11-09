@@ -13,7 +13,7 @@ import (
 
 // Muxer
 type Muxer struct {
-	streamerQueues sync.Map
+	Queues sync.Map
 
 	mtx sync.Mutex
 	streamerCount int
@@ -24,7 +24,7 @@ func NewMuxer() *Muxer {
 	}
 }
 
-func (m Muxer)Len() int {
+func (m Muxer) Len() int {
 	return m.streamerCount
 }
 
@@ -40,9 +40,9 @@ func (m *Muxer) Add(data *blatherpb.CallData) {
 	streamer := strmr.NewStreamer(samples, numSamples)
 
 	newQ := queue.NewQueue()
-	q, _ := m.streamerQueues.LoadOrStore(id, newQ)
+	q, _ := m.Queues.LoadOrStore(id, newQ)
 	q.(*queue.Queue).Add(streamer)
-	m.streamerQueues.Store(id, q)
+	m.Queues.Store(id, q)
 
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
@@ -50,7 +50,7 @@ func (m *Muxer) Add(data *blatherpb.CallData) {
 }
 
 func (m *Muxer) Delete(id userid.ID) {
-	m.streamerQueues.Delete(id)
+	m.Queues.Delete(id)
 
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
@@ -72,7 +72,7 @@ func (m *Muxer) Stream(samples [][2]float64) (n int, ok bool) {
 	}
 
 	for m.Len() > 0 && n < toStream {
-		m.streamerQueues.Range(func(key interface{}, value interface{}) bool {
+		m.Queues.Range(func(key interface{}, value interface{}) bool {
 			st := value.(beep.Streamer)
 			id := userid.ID(key.(uint64))
 			// mix the stream

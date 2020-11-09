@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/faiface/beep v1.0.2
-	github.com/golang/protobuf v1.4.3 // indirect
+	github.com/golang/protobuf v1.4.3
 	github.com/hajimehoshi/go-mp3 v0.3.1 // indirect
 	github.com/sirupsen/logrus v1.7.0
 	github.com/stretchr/testify v1.3.0

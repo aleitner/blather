@@ -23,3 +23,11 @@ func (c Coordinate) ToGRPC() *call.Coordinates {
 func (c Coordinate) Distance(object Coordinate) float64 {
 	return math.Sqrt(math.Pow(object.X-c.X, 2) + math.Pow(object.Y-c.Y, 2) + math.Pow(object.Z-c.Z, 2))
 }
+
+func GRPCCoordinateToCoordinate(grpcObject *call.Coordinates) *Coordinate {
+	return &Coordinate{
+		X: grpcObject.GetX(),
+		Y: grpcObject.GetY(),
+		Z: grpcObject.GetZ(),
+	}
+}

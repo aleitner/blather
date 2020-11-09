@@ -11,7 +11,6 @@ import (
 	"github.com/aleitner/blather/pkg/muxer"
 	"github.com/aleitner/blather/pkg/protobuf"
 	"github.com/faiface/beep"
-	"github.com/faiface/beep/speaker"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -29,6 +28,8 @@ type Client struct {
 	conn       *grpc.ClientConn
 	coordinate *coordinates.Coordinate
 	muxer      *muxer.Muxer
+	sr 		   beep.SampleRate
+	quality    int
 }
 
 func NewClient(id int, logger *log.Logger, conn *grpc.ClientConn) CallClient {
@@ -39,6 +40,10 @@ func NewClient(id int, logger *log.Logger, conn *grpc.ClientConn) CallClient {
 		route:      blatherpb.NewPhoneClient(conn),
 		muxer:      muxer.NewMuxer(),
 		coordinate: &coordinates.Coordinate{X: 0, Y: 0, Z: 0},
+
+		// Audio mixing
+		sr: beep.SampleRate(44100),
+		quality: 4,
 	}
 }
 
@@ -47,8 +52,9 @@ func (client *Client) Call(ctx context.Context, audioInput beep.Streamer, format
 	md := metadata.Pairs("client-id", clientId)
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
-	speaker.Init(format.SampleRate, 4096)
-	speaker.Play(client.muxer)
+	// Resample audio
+	// NB: Perhaps we can determine the sample rate based on everyone's connections
+	resampled := beep.Resample(client.quality, format.SampleRate, client.sr, audioInput)
 
 	stream, err := client.route.Call(ctx)
 	if err != nil {
@@ -62,17 +68,14 @@ func (client *Client) Call(ctx context.Context, audioInput beep.Streamer, format
 		for {
 			sampleRate := 512
 			buf := make([][2]float64, sampleRate) // Optimal sending size is 16KiB-64KiB
-			numSamples, ok := audioInput.Stream(buf)
+			numSamples, ok := resampled.Stream(buf)
 			if !ok {
 				// server returns with nil
-				if audioInput.Err() != nil {
+				if resampled.Err() != nil {
 					client.logger.Errorf("audio read fail: %s/n", err)
 				}
 				break
 			}
-
-			// TODO: Resample audio here to set sample rate
-			// Perhaps we can determine the sample rate based on everyone's connections
 
 			if err := stream.Send(&blatherpb.CallData{
 				AudioData: &blatherpb.AudioData{
@@ -88,9 +91,9 @@ func (client *Client) Call(ctx context.Context, audioInput beep.Streamer, format
 			}
 		}
 
-		//if err := stream.CloseSend(); err != nil {
-		//	client.logger.Errorf("close send fail: %s\n", err)
-		//}
+		if err := stream.CloseSend(); err != nil {
+			client.logger.Errorf("close send fail: %s\n", err)
+		}
 
 		wg.Done()
 		client.logger.Errorf("Finished sending data...\n")
