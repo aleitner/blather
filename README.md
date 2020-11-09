@@ -7,8 +7,8 @@ Library for making group calls that have spacial awareness
 - [x] Combine all input sources into single stream
 - [ ] Change volume depending on distance
 - [ ] Pan audio depending on location
+- [ ] Client resamples audio before sending out
 - [ ] Front end
 - [ ] Get Mic Input
 - [ ] Write Integration Tests
-- [ ] Adjust sample rates dynamically
 - [ ] Address all NB's and Todo's
