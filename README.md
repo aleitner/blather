@@ -10,6 +10,8 @@ Library for making group calls that have spacial awareness
 - [x] Client resamples audio before sending out
 - [ ] Pan audio depending on location
 - [ ] Adjust sample rate and quality by connection
+- [ ] Add rooms to server for different chat groups
+- [ ] Message signing and encryption
 - [ ] Write Integration Tests
 - [ ] Address all NB's and Todo's
 
