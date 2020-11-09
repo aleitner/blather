@@ -71,16 +71,13 @@ func (client *Client) Call(ctx context.Context, audioInput beep.Streamer, format
 				break
 			}
 
+			// TODO: Resample audio here to set sample rate
+			// Perhaps we can determine the sample rate based on everyone's connections
+
 			if err := stream.Send(&blatherpb.CallData{
 				AudioData: &blatherpb.AudioData{
-					AudioEncoding: "mp3",
 					Samples:       utils.ToGRPCSampleRate(buf, numSamples),
 					NumSamples:    uint32(numSamples),
-					Format: &blatherpb.Format{
-						SampleRate:  uint32(sampleRate),
-						NumChannels: uint32(format.NumChannels),
-						Precision:   uint32(format.Precision),
-					},
 				},
 				UserMetaData: &blatherpb.UserMetaData{
 					Id:          uint64(client.id),
