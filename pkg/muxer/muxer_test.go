@@ -12,14 +12,8 @@ func generateCallData(samples [][2]float64, sampleNum, sampleRate, id int) *blat
 	utils.ToGRPCSampleRate(samples, sampleNum)
 	return &blatherpb.CallData{
 		AudioData:    &blatherpb.AudioData{
-			AudioEncoding: "test",
 			Samples:       utils.ToGRPCSampleRate(samples, sampleNum),
 			NumSamples:    uint32(sampleNum),
-			Format:        &blatherpb.Format{
-				SampleRate:  uint32(sampleRate),
-				NumChannels: 2,
-				Precision:   0,
-			},
 		},
 		UserMetaData: &blatherpb.UserMetaData{
 			Id:          uint64(id),
