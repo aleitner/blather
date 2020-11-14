@@ -15,14 +15,7 @@ func generateCallData(samples [][2]float64, sampleNum, sampleRate, id int) *blat
 			Samples:       utils.ToGRPCSampleRate(samples, sampleNum),
 			NumSamples:    uint32(sampleNum),
 		},
-		UserMetaData: &blatherpb.UserMetaData{
-			Id:          uint64(id),
-			Coordinates: &blatherpb.Coordinates{
-				X: 0,
-				Y: 0,
-				Z: 0,
-			},
-		},
+		UserId:          uint64(id),
 	}
 }
 

@@ -30,8 +30,8 @@ type CallData struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	AudioData    *AudioData    `protobuf:"bytes,1,opt,name=audio_data,json=audioData,proto3" json:"audio_data,omitempty"`
-	UserMetaData *UserMetaData `protobuf:"bytes,2,opt,name=user_meta_data,json=userMetaData,proto3" json:"user_meta_data,omitempty"`
+	AudioData *AudioData `protobuf:"bytes,1,opt,name=audio_data,json=audioData,proto3" json:"audio_data,omitempty"`
+	UserId    uint64     `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 }
 
 func (x *CallData) Reset() {
@@ -73,11 +73,11 @@ func (x *CallData) GetAudioData() *AudioData {
 	return nil
 }
 
-func (x *CallData) GetUserMetaData() *UserMetaData {
+func (x *CallData) GetUserId() uint64 {
 	if x != nil {
-		return x.UserMetaData
+		return x.UserId
 	}
-	return nil
+	return 0
 }
 
 type AudioData struct {
@@ -190,61 +190,6 @@ func (x *Sample) GetRightChannel() float64 {
 	return 0
 }
 
-type UserMetaData struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Id          uint64       `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Coordinates *Coordinates `protobuf:"bytes,2,opt,name=coordinates,proto3" json:"coordinates,omitempty"`
-}
-
-func (x *UserMetaData) Reset() {
-	*x = UserMetaData{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_protobuf_phone_proto_msgTypes[3]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *UserMetaData) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UserMetaData) ProtoMessage() {}
-
-func (x *UserMetaData) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_protobuf_phone_proto_msgTypes[3]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use UserMetaData.ProtoReflect.Descriptor instead.
-func (*UserMetaData) Descriptor() ([]byte, []int) {
-	return file_pkg_protobuf_phone_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *UserMetaData) GetId() uint64 {
-	if x != nil {
-		return x.Id
-	}
-	return 0
-}
-
-func (x *UserMetaData) GetCoordinates() *Coordinates {
-	if x != nil {
-		return x.Coordinates
-	}
-	return nil
-}
-
 type Coordinates struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -258,7 +203,7 @@ type Coordinates struct {
 func (x *Coordinates) Reset() {
 	*x = Coordinates{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_protobuf_phone_proto_msgTypes[4]
+		mi := &file_pkg_protobuf_phone_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -271,7 +216,7 @@ func (x *Coordinates) String() string {
 func (*Coordinates) ProtoMessage() {}
 
 func (x *Coordinates) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_protobuf_phone_proto_msgTypes[4]
+	mi := &file_pkg_protobuf_phone_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -284,7 +229,7 @@ func (x *Coordinates) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Coordinates.ProtoReflect.Descriptor instead.
 func (*Coordinates) Descriptor() ([]byte, []int) {
-	return file_pkg_protobuf_phone_proto_rawDescGZIP(), []int{4}
+	return file_pkg_protobuf_phone_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Coordinates) GetX() float64 {
@@ -320,7 +265,7 @@ type UserSettingsData struct {
 func (x *UserSettingsData) Reset() {
 	*x = UserSettingsData{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_protobuf_phone_proto_msgTypes[5]
+		mi := &file_pkg_protobuf_phone_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -333,7 +278,7 @@ func (x *UserSettingsData) String() string {
 func (*UserSettingsData) ProtoMessage() {}
 
 func (x *UserSettingsData) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_protobuf_phone_proto_msgTypes[5]
+	mi := &file_pkg_protobuf_phone_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -346,7 +291,7 @@ func (x *UserSettingsData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserSettingsData.ProtoReflect.Descriptor instead.
 func (*UserSettingsData) Descriptor() ([]byte, []int) {
-	return file_pkg_protobuf_phone_proto_rawDescGZIP(), []int{5}
+	return file_pkg_protobuf_phone_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *UserSettingsData) GetMute() bool {
@@ -374,7 +319,7 @@ type UserSettingsResponse struct {
 func (x *UserSettingsResponse) Reset() {
 	*x = UserSettingsResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_protobuf_phone_proto_msgTypes[6]
+		mi := &file_pkg_protobuf_phone_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -387,7 +332,7 @@ func (x *UserSettingsResponse) String() string {
 func (*UserSettingsResponse) ProtoMessage() {}
 
 func (x *UserSettingsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_protobuf_phone_proto_msgTypes[6]
+	mi := &file_pkg_protobuf_phone_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -400,7 +345,7 @@ func (x *UserSettingsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserSettingsResponse.ProtoReflect.Descriptor instead.
 func (*UserSettingsResponse) Descriptor() ([]byte, []int) {
-	return file_pkg_protobuf_phone_proto_rawDescGZIP(), []int{6}
+	return file_pkg_protobuf_phone_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *UserSettingsResponse) GetOk() bool {
@@ -415,31 +360,23 @@ var File_pkg_protobuf_phone_proto protoreflect.FileDescriptor
 var file_pkg_protobuf_phone_proto_rawDesc = []byte{
 	0x0a, 0x18, 0x70, 0x6b, 0x67, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x70,
 	0x68, 0x6f, 0x6e, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x09, 0x62, 0x6c, 0x61, 0x74,
-	0x68, 0x65, 0x72, 0x70, 0x62, 0x22, 0x7e, 0x0a, 0x08, 0x43, 0x61, 0x6c, 0x6c, 0x44, 0x61, 0x74,
+	0x68, 0x65, 0x72, 0x70, 0x62, 0x22, 0x58, 0x0a, 0x08, 0x43, 0x61, 0x6c, 0x6c, 0x44, 0x61, 0x74,
 	0x61, 0x12, 0x33, 0x0a, 0x0a, 0x61, 0x75, 0x64, 0x69, 0x6f, 0x5f, 0x64, 0x61, 0x74, 0x61, 0x18,
 	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x62, 0x6c, 0x61, 0x74, 0x68, 0x65, 0x72, 0x70,
 	0x62, 0x2e, 0x41, 0x75, 0x64, 0x69, 0x6f, 0x44, 0x61, 0x74, 0x61, 0x52, 0x09, 0x61, 0x75, 0x64,
-	0x69, 0x6f, 0x44, 0x61, 0x74, 0x61, 0x12, 0x3d, 0x0a, 0x0e, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x6d,
-	0x65, 0x74, 0x61, 0x5f, 0x64, 0x61, 0x74, 0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17,
-	0x2e, 0x62, 0x6c, 0x61, 0x74, 0x68, 0x65, 0x72, 0x70, 0x62, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x4d,
-	0x65, 0x74, 0x61, 0x44, 0x61, 0x74, 0x61, 0x52, 0x0c, 0x75, 0x73, 0x65, 0x72, 0x4d, 0x65, 0x74,
-	0x61, 0x44, 0x61, 0x74, 0x61, 0x22, 0x59, 0x0a, 0x09, 0x41, 0x75, 0x64, 0x69, 0x6f, 0x44, 0x61,
-	0x74, 0x61, 0x12, 0x2b, 0x0a, 0x07, 0x73, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x73, 0x18, 0x01, 0x20,
-	0x03, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x62, 0x6c, 0x61, 0x74, 0x68, 0x65, 0x72, 0x70, 0x62, 0x2e,
-	0x53, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x52, 0x07, 0x73, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x73, 0x12,
-	0x1f, 0x0a, 0x0b, 0x6e, 0x75, 0x6d, 0x5f, 0x73, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x73, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x0d, 0x52, 0x0a, 0x6e, 0x75, 0x6d, 0x53, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x73,
-	0x22, 0x50, 0x0a, 0x06, 0x53, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x12, 0x21, 0x0a, 0x0c, 0x6c, 0x65,
-	0x66, 0x74, 0x5f, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x01,
-	0x52, 0x0b, 0x6c, 0x65, 0x66, 0x74, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x12, 0x23, 0x0a,
-	0x0d, 0x72, 0x69, 0x67, 0x68, 0x74, 0x5f, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x01, 0x52, 0x0c, 0x72, 0x69, 0x67, 0x68, 0x74, 0x43, 0x68, 0x61, 0x6e, 0x6e,
-	0x65, 0x6c, 0x22, 0x58, 0x0a, 0x0c, 0x55, 0x73, 0x65, 0x72, 0x4d, 0x65, 0x74, 0x61, 0x44, 0x61,
-	0x74, 0x61, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02,
-	0x69, 0x64, 0x12, 0x38, 0x0a, 0x0b, 0x63, 0x6f, 0x6f, 0x72, 0x64, 0x69, 0x6e, 0x61, 0x74, 0x65,
-	0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x62, 0x6c, 0x61, 0x74, 0x68, 0x65,
-	0x72, 0x70, 0x62, 0x2e, 0x43, 0x6f, 0x6f, 0x72, 0x64, 0x69, 0x6e, 0x61, 0x74, 0x65, 0x73, 0x52,
-	0x0b, 0x63, 0x6f, 0x6f, 0x72, 0x64, 0x69, 0x6e, 0x61, 0x74, 0x65, 0x73, 0x22, 0x37, 0x0a, 0x0b,
+	0x69, 0x6f, 0x44, 0x61, 0x74, 0x61, 0x12, 0x17, 0x0a, 0x07, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x69,
+	0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x75, 0x73, 0x65, 0x72, 0x49, 0x64, 0x22,
+	0x59, 0x0a, 0x09, 0x41, 0x75, 0x64, 0x69, 0x6f, 0x44, 0x61, 0x74, 0x61, 0x12, 0x2b, 0x0a, 0x07,
+	0x73, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x11, 0x2e,
+	0x62, 0x6c, 0x61, 0x74, 0x68, 0x65, 0x72, 0x70, 0x62, 0x2e, 0x53, 0x61, 0x6d, 0x70, 0x6c, 0x65,
+	0x52, 0x07, 0x73, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x73, 0x12, 0x1f, 0x0a, 0x0b, 0x6e, 0x75, 0x6d,
+	0x5f, 0x73, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x0a,
+	0x6e, 0x75, 0x6d, 0x53, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x73, 0x22, 0x50, 0x0a, 0x06, 0x53, 0x61,
+	0x6d, 0x70, 0x6c, 0x65, 0x12, 0x21, 0x0a, 0x0c, 0x6c, 0x65, 0x66, 0x74, 0x5f, 0x63, 0x68, 0x61,
+	0x6e, 0x6e, 0x65, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x01, 0x52, 0x0b, 0x6c, 0x65, 0x66, 0x74,
+	0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x12, 0x23, 0x0a, 0x0d, 0x72, 0x69, 0x67, 0x68, 0x74,
+	0x5f, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x01, 0x52, 0x0c,
+	0x72, 0x69, 0x67, 0x68, 0x74, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x22, 0x37, 0x0a, 0x0b,
 	0x43, 0x6f, 0x6f, 0x72, 0x64, 0x69, 0x6e, 0x61, 0x74, 0x65, 0x73, 0x12, 0x0c, 0x0a, 0x01, 0x78,
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x01, 0x52, 0x01, 0x78, 0x12, 0x0c, 0x0a, 0x01, 0x79, 0x18, 0x02,
 	0x20, 0x01, 0x28, 0x01, 0x52, 0x01, 0x79, 0x12, 0x0c, 0x0a, 0x01, 0x7a, 0x18, 0x03, 0x20, 0x01,
@@ -482,32 +419,29 @@ func file_pkg_protobuf_phone_proto_rawDescGZIP() []byte {
 	return file_pkg_protobuf_phone_proto_rawDescData
 }
 
-var file_pkg_protobuf_phone_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_pkg_protobuf_phone_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_pkg_protobuf_phone_proto_goTypes = []interface{}{
 	(*CallData)(nil),             // 0: blatherpb.CallData
 	(*AudioData)(nil),            // 1: blatherpb.AudioData
 	(*Sample)(nil),               // 2: blatherpb.Sample
-	(*UserMetaData)(nil),         // 3: blatherpb.UserMetaData
-	(*Coordinates)(nil),          // 4: blatherpb.Coordinates
-	(*UserSettingsData)(nil),     // 5: blatherpb.UserSettingsData
-	(*UserSettingsResponse)(nil), // 6: blatherpb.UserSettingsResponse
-	nil,                          // 7: blatherpb.UserSettingsData.MuteListEntry
+	(*Coordinates)(nil),          // 3: blatherpb.Coordinates
+	(*UserSettingsData)(nil),     // 4: blatherpb.UserSettingsData
+	(*UserSettingsResponse)(nil), // 5: blatherpb.UserSettingsResponse
+	nil,                          // 6: blatherpb.UserSettingsData.MuteListEntry
 }
 var file_pkg_protobuf_phone_proto_depIdxs = []int32{
 	1, // 0: blatherpb.CallData.audio_data:type_name -> blatherpb.AudioData
-	3, // 1: blatherpb.CallData.user_meta_data:type_name -> blatherpb.UserMetaData
-	2, // 2: blatherpb.AudioData.samples:type_name -> blatherpb.Sample
-	4, // 3: blatherpb.UserMetaData.coordinates:type_name -> blatherpb.Coordinates
-	7, // 4: blatherpb.UserSettingsData.mute_list:type_name -> blatherpb.UserSettingsData.MuteListEntry
-	0, // 5: blatherpb.Phone.Call:input_type -> blatherpb.CallData
-	5, // 6: blatherpb.Phone.UpdateSettings:input_type -> blatherpb.UserSettingsData
-	0, // 7: blatherpb.Phone.Call:output_type -> blatherpb.CallData
-	6, // 8: blatherpb.Phone.UpdateSettings:output_type -> blatherpb.UserSettingsResponse
-	7, // [7:9] is the sub-list for method output_type
-	5, // [5:7] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	2, // 1: blatherpb.AudioData.samples:type_name -> blatherpb.Sample
+	6, // 2: blatherpb.UserSettingsData.mute_list:type_name -> blatherpb.UserSettingsData.MuteListEntry
+	0, // 3: blatherpb.Phone.Call:input_type -> blatherpb.CallData
+	4, // 4: blatherpb.Phone.UpdateSettings:input_type -> blatherpb.UserSettingsData
+	0, // 5: blatherpb.Phone.Call:output_type -> blatherpb.CallData
+	5, // 6: blatherpb.Phone.UpdateSettings:output_type -> blatherpb.UserSettingsResponse
+	5, // [5:7] is the sub-list for method output_type
+	3, // [3:5] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_pkg_protobuf_phone_proto_init() }
@@ -553,18 +487,6 @@ func file_pkg_protobuf_phone_proto_init() {
 			}
 		}
 		file_pkg_protobuf_phone_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UserMetaData); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_pkg_protobuf_phone_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Coordinates); i {
 			case 0:
 				return &v.state
@@ -576,7 +498,7 @@ func file_pkg_protobuf_phone_proto_init() {
 				return nil
 			}
 		}
-		file_pkg_protobuf_phone_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+		file_pkg_protobuf_phone_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*UserSettingsData); i {
 			case 0:
 				return &v.state
@@ -588,7 +510,7 @@ func file_pkg_protobuf_phone_proto_init() {
 				return nil
 			}
 		}
-		file_pkg_protobuf_phone_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+		file_pkg_protobuf_phone_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*UserSettingsResponse); i {
 			case 0:
 				return &v.state
@@ -607,7 +529,7 @@ func file_pkg_protobuf_phone_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_pkg_protobuf_phone_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -10,7 +10,7 @@ service Phone {
 
 message CallData {
     AudioData audio_data = 1;
-    UserMetaData user_meta_data = 2;
+    uint64 user_id = 2;
 }
 
 message AudioData {
@@ -21,11 +21,6 @@ message AudioData {
 message Sample {
     double left_channel = 1;
     double right_channel = 2;
-}
-
-message UserMetaData {
-    uint64 id = 1;
-    Coordinates coordinates = 2;
 }
 
 message Coordinates {

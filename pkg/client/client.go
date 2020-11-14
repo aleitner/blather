@@ -7,7 +7,6 @@ import (
 	"sync"
 
 	"github.com/aleitner/blather/internal/utils"
-	"github.com/aleitner/blather/pkg/coordinates"
 	"github.com/aleitner/blather/pkg/muxer"
 	"github.com/aleitner/blather/pkg/protobuf"
 	"github.com/faiface/beep"
@@ -26,7 +25,6 @@ type Client struct {
 	logger     *log.Logger
 	route      blatherpb.PhoneClient
 	conn       *grpc.ClientConn
-	coordinate *coordinates.Coordinate
 	muxer      *muxer.Muxer
 	sr 		   beep.SampleRate
 	quality    int
@@ -39,7 +37,6 @@ func NewClient(id int, logger *log.Logger, conn *grpc.ClientConn) CallClient {
 		conn:       conn,
 		route:      blatherpb.NewPhoneClient(conn),
 		muxer:      muxer.NewMuxer(),
-		coordinate: &coordinates.Coordinate{X: 0, Y: 0, Z: 0},
 
 		// Audio mixing
 		sr: beep.SampleRate(44100),
@@ -82,10 +79,7 @@ func (client *Client) Call(ctx context.Context, audioInput beep.Streamer, format
 					Samples:       utils.ToGRPCSampleRate(buf, numSamples),
 					NumSamples:    uint32(numSamples),
 				},
-				UserMetaData: &blatherpb.UserMetaData{
-					Id:          uint64(client.id),
-					Coordinates: client.coordinate.ToGRPC(),
-				},
+				UserId: uint64(client.id),
 			}); err != nil {
 				client.logger.Errorf("stream Send fail: %s/n", err)
 			}

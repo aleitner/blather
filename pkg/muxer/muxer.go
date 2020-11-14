@@ -30,11 +30,10 @@ func (m Muxer) Len() int {
 
 func (m *Muxer) Add(data *blatherpb.CallData) {
 	// Todo: We need to also think about storing other data
-	userMetaData := data.GetUserMetaData()
 	audioData := data.GetAudioData()
 	grpcSamples := audioData.GetSamples()
 	numSamples := int(audioData.GetNumSamples())
-	id := userMetaData.GetId()
+	id := data.GetUserId()
 
 	samples := utils.ToSampleRate(grpcSamples, numSamples)
 	streamer := strmr.NewStreamer(samples, numSamples)
