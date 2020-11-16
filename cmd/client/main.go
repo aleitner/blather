@@ -54,13 +54,15 @@ func main() {
 					return err
 				}
 
+				ctx:= context.Background()
+
 				streamer, format, err := mp3.Decode(f)
 				if err != nil {
 					return err
 				}
 				defer streamer.Close()
 
-				err = client.Call(context.Background(), streamer, format)
+				err = client.Call(ctx, "1234", streamer, format)
 				if err != nil {
 					return err
 				}
