@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"strconv"
 	"sync"
@@ -16,7 +17,8 @@ import (
 )
 
 type CallClient interface {
-	Call(ctx context.Context, audioInput beep.Streamer, format beep.Format) error
+	CreateRoom(ctx context.Context) (roomID string, err error)
+	Call(ctx context.Context, room string, audioInput beep.Streamer, format beep.Format) error
 	CloseConn() error
 }
 
@@ -44,9 +46,18 @@ func NewClient(id int, logger *log.Logger, conn *grpc.ClientConn) CallClient {
 	}
 }
 
-func (client *Client) Call(ctx context.Context, audioInput beep.Streamer, format beep.Format) error {
+func (client *Client) CreateRoom(ctx context.Context) (roomID string, err error) {
+	resp, err := client.route.CreateRoom(ctx, &blatherpb.CreateRoomReq{})
+	if err != nil {
+		return "", fmt.Errorf("Failed to create room: %s", err.Error())
+	}
+
+	return resp.GetId(), nil
+}
+
+func (client *Client) Call(ctx context.Context, room string, audioInput beep.Streamer, format beep.Format) error {
 	clientId := strconv.Itoa(client.id)
-	md := metadata.Pairs("client-id", clientId)
+	md := metadata.Pairs("client-id", clientId, "room-id", room)
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
 	// Resample audio

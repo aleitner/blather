@@ -8,10 +8,11 @@ Library for making group calls that have spacial awareness
 - [x] Stream audio from server to clients
 - [x] Combine all input sources into single stream
 - [x] Client resamples audio before sending out
+- [x] Add rooms to server for different chat groups
+- [ ] Add rate limiter
 - [ ] Send coordinates to server
 - [ ] Retrieve coordinates from server
 - [ ] Adjust sample rate and quality by connection
-- [ ] Add rooms to server for different chat groups
 - [ ] Message signing and encryption
 - [ ] Switch server host when server goes down
 - [ ] Write Integration Tests

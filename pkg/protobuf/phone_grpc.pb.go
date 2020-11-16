@@ -17,6 +17,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PhoneClient interface {
+	CreateRoom(ctx context.Context, in *CreateRoomReq, opts ...grpc.CallOption) (*CreateRoomResp, error)
 	Call(ctx context.Context, opts ...grpc.CallOption) (Phone_CallClient, error)
 	UpdateSettings(ctx context.Context, in *UserSettingsData, opts ...grpc.CallOption) (*UserSettingsResponse, error)
 }
@@ -27,6 +28,15 @@ type phoneClient struct {
 
 func NewPhoneClient(cc grpc.ClientConnInterface) PhoneClient {
 	return &phoneClient{cc}
+}
+
+func (c *phoneClient) CreateRoom(ctx context.Context, in *CreateRoomReq, opts ...grpc.CallOption) (*CreateRoomResp, error) {
+	out := new(CreateRoomResp)
+	err := c.cc.Invoke(ctx, "/blatherpb.Phone/CreateRoom", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *phoneClient) Call(ctx context.Context, opts ...grpc.CallOption) (Phone_CallClient, error) {
@@ -73,6 +83,7 @@ func (c *phoneClient) UpdateSettings(ctx context.Context, in *UserSettingsData, 
 // All implementations should embed UnimplementedPhoneServer
 // for forward compatibility
 type PhoneServer interface {
+	CreateRoom(context.Context, *CreateRoomReq) (*CreateRoomResp, error)
 	Call(Phone_CallServer) error
 	UpdateSettings(context.Context, *UserSettingsData) (*UserSettingsResponse, error)
 }
@@ -81,6 +92,9 @@ type PhoneServer interface {
 type UnimplementedPhoneServer struct {
 }
 
+func (UnimplementedPhoneServer) CreateRoom(context.Context, *CreateRoomReq) (*CreateRoomResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateRoom not implemented")
+}
 func (UnimplementedPhoneServer) Call(Phone_CallServer) error {
 	return status.Errorf(codes.Unimplemented, "method Call not implemented")
 }
@@ -97,6 +111,24 @@ type UnsafePhoneServer interface {
 
 func RegisterPhoneServer(s grpc.ServiceRegistrar, srv PhoneServer) {
 	s.RegisterService(&_Phone_serviceDesc, srv)
+}
+
+func _Phone_CreateRoom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRoomReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PhoneServer).CreateRoom(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/blatherpb.Phone/CreateRoom",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PhoneServer).CreateRoom(ctx, req.(*CreateRoomReq))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Phone_Call_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -147,6 +179,10 @@ var _Phone_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "blatherpb.Phone",
 	HandlerType: (*PhoneServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateRoom",
+			Handler:    _Phone_CreateRoom_Handler,
+		},
 		{
 			MethodName: "UpdateSettings",
 			Handler:    _Phone_UpdateSettings_Handler,

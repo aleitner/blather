@@ -2,6 +2,7 @@ package utils
 
 import (
 	"log"
+	"math/rand"
 	"net"
 
 	call "github.com/aleitner/blather/pkg/protobuf"
@@ -41,4 +42,14 @@ func ToSampleRate(grpcSamples []*call.Sample, numSamples int) [][2]float64 {
 	}
 
 	return samples
+}
+
+var letters = []rune("abcdefghijklmnopqrstuvwxyz0123456789")
+
+func RandSeq(n int) string {
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(b)
 }
