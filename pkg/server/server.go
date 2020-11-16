@@ -48,7 +48,7 @@ func (bs *BlatherServer) Call(stream blatherpb.Phone_CallServer) error {
 		return fmt.Errorf("Room %s is not a valid room id", md.RoomID)
 	}
 
-	f := room.(forwarder.Forwarder)
+	f := room.(*forwarder.Forwarder)
 
 	// Create forwarder for client
 	f.Add(md.ClientID, stream)

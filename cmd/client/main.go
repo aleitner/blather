@@ -2,76 +2,109 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"math/rand"
 	"os"
 	"time"
 
-	"github.com/faiface/beep/mp3"
 	"github.com/aleitner/blather/pkg/client"
+	"github.com/faiface/beep/mp3"
 	log "github.com/sirupsen/logrus"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 	"google.golang.org/grpc"
 )
 
-var (
-	port int
-)
-
-func initializeFlags() {
-	flag.IntVar(&port, "port", 8080, "port")
-	flag.Parse()
-}
-
 func main() {
-	app := cli.NewApp()
+	app := &cli.App{
+		Flags: []cli.Flag {
+			&cli.StringFlag{
+				Name: "address",
+				Value: ":8080",
+				Usage: "port of server being ",
+			},
+		},
+		Commands: []*cli.Command{
+			{
+				Name:    "create",
+				Aliases: []string{"c"},
+				Usage:   "create a call room",
+				Action: func(c *cli.Context) error {
+					// Set up connection with rpc server
+					var conn *grpc.ClientConn
+					conn, err := grpc.Dial(c.String("address"), grpc.WithInsecure())
+					if err != nil {
+						log.Fatalf("grpc Dial fail: %s/n", err)
+					}
 
-	initializeFlags()
+					var id = rand.New(rand.NewSource(time.Now().UnixNano())).Int()
 
-	// Set up connection with rpc server
-	var conn *grpc.ClientConn
-	conn, err := grpc.Dial(fmt.Sprintf(":%d", port), grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("grpc Dial fail: %s/n", err)
-	}
+					var logger = log.New()
+					client := client.NewClient(id, logger, conn)
+					defer client.CloseConn()
 
-	var id = rand.New(rand.NewSource(time.Now().UnixNano())).Int()
+					ctx:= context.Background()
 
-	var logger = log.New()
-	client := client.NewClient(id, logger, conn)
-	defer client.CloseConn()
+					roomID, err := client.CreateRoom(ctx)
+					if err != nil {
+						return err
+					}
 
-	app.Commands = []cli.Command{
-		{
-			Name:    "call",
-			Aliases: []string{"c"},
-			Usage:   "call",
-			Action: func(c *cli.Context) error {
-				filepath := c.Args().First()
-				f, err := os.Open(filepath)
-				if err != nil {
-					return err
-				}
+					fmt.Printf("ROOM: %s\n", roomID)
+					return nil
+				},
+			},
+			{
+				Name:    "join",
+				Aliases: []string{"j"},
+				Usage:   "join a call room",
+				Flags: []cli.Flag {
+					&cli.StringFlag{
+						Name: "room",
+						Value: "",
+						Usage: "room number",
+						Required: true,
+					},
+				},
+				Action: func(c *cli.Context) error {
+					// Set up connection with rpc server
+					var conn *grpc.ClientConn
+					conn, err := grpc.Dial(c.String("address"), grpc.WithInsecure())
+					if err != nil {
+						log.Fatalf("grpc Dial fail: %s/n", err)
+					}
 
-				ctx:= context.Background()
+					var id = rand.New(rand.NewSource(time.Now().UnixNano())).Int()
 
-				streamer, format, err := mp3.Decode(f)
-				if err != nil {
-					return err
-				}
-				defer streamer.Close()
+					var logger = log.New()
+					client := client.NewClient(id, logger, conn)
+					defer client.CloseConn()
 
-				err = client.Call(ctx, "1234", streamer, format)
-				if err != nil {
-					return err
-				}
-				return nil
+					filepath := c.Args().First()
+					f, err := os.Open(filepath)
+					if err != nil {
+						return err
+					}
+
+					ctx:= context.Background()
+
+					streamer, format, err := mp3.Decode(f)
+					if err != nil {
+						return err
+					}
+					defer streamer.Close()
+
+					err = client.Call(ctx, c.String("room"), streamer, format)
+					if err != nil {
+						return err
+					}
+					return nil
+				},
 			},
 		},
 	}
-	err = app.Run(os.Args)
+
+	err := app.Run(os.Args)
 	if err != nil {
-		log.Fatalf("app Run fail: %s/n", err)
+		log.Fatal(err)
 	}
 }

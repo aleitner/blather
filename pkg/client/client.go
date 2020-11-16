@@ -3,7 +3,6 @@ package client
 import (
 	"context"
 	"fmt"
-	"io"
 	"strconv"
 	"sync"
 
@@ -93,6 +92,7 @@ func (client *Client) Call(ctx context.Context, room string, audioInput beep.Str
 				UserId: uint64(client.id),
 			}); err != nil {
 				client.logger.Errorf("stream Send fail: %s/n", err)
+				break
 			}
 		}
 
@@ -110,10 +110,8 @@ func (client *Client) Call(ctx context.Context, room string, audioInput beep.Str
 		for {
 			res, err := stream.Recv()
 			if err != nil {
-				if err == io.EOF {
-					break
-				}
 				client.logger.Errorf("stream Recv fail: %s/n", err)
+				break
 			}
 
 			// Add audio data to muxer
