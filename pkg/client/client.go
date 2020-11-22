@@ -84,8 +84,6 @@ func (client *Client) Call(ctx context.Context, room string, audioInput beep.Str
 				break
 			}
 
-			fmt.Println(buf)
-			
 			if err := stream.Send(&blatherpb.CallData{
 				AudioData: &blatherpb.AudioData{
 					Samples:       utils.ToGRPCSampleRate(buf, numSamples),
