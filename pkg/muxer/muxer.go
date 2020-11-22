@@ -29,8 +29,11 @@ func (m Muxer) Len() int {
 }
 
 func (m *Muxer) Add(data *blatherpb.CallData) {
-	// Todo: We need to also think about storing other data
 	audioData := data.GetAudioData()
+	if audioData.GetNumSamples() == 0 {
+		return
+	}
+
 	grpcSamples := audioData.GetSamples()
 	numSamples := int(audioData.GetNumSamples())
 	id := data.GetUserId()

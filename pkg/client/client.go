@@ -75,13 +75,17 @@ func (client *Client) Call(ctx context.Context, room string, audioInput beep.Str
 		for {
 			sampleRate := 512
 			buf := make([][2]float64, sampleRate) // Optimal sending size is 16KiB-64KiB
-			numSamples, ok := resampled.Stream(buf)
+			numSamples, ok := audioInput.Stream(buf)
 			if !ok {
 				// server returns with nil
 				if resampled.Err() != nil {
 					client.logger.Errorf("audio read fail: %s/n", err)
 				}
 				break
+			}
+
+			if numSamples == 0 {
+				continue
 			}
 
 			if err := stream.Send(&blatherpb.CallData{
