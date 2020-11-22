@@ -12,10 +12,10 @@ import (
 	"github.com/aleitner/blather/pkg/client"
 	"github.com/aleitner/microphone"
 	"github.com/faiface/beep/speaker"
+	"github.com/gen2brain/malgo"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 	"google.golang.org/grpc"
-	"github.com/gen2brain/malgo"
 )
 
 func main() {
@@ -70,6 +70,8 @@ func main() {
 					},
 				},
 				Action: func(c *cli.Context) error {
+					ctx:= context.Background()
+
 					mctx, err := malgo.InitContext(nil, malgo.ContextConfig{}, func(message string) {
 						fmt.Printf("LOG <%v>\n", message)
 					})
@@ -96,14 +98,6 @@ func main() {
 
 					stream.Start()
 
-					ctrlc := make(chan os.Signal)
-					signal.Notify(ctrlc, os.Interrupt, syscall.SIGTERM)
-					go func() {
-						<-ctrlc
-						fmt.Println("\r- Turning off microphone...")
-						stream.Close()
-					}()
-
 					// Set up connection with rpc server
 					var conn *grpc.ClientConn
 					conn, err = grpc.Dial(c.String("address"), grpc.WithInsecure())
@@ -117,9 +111,18 @@ func main() {
 					client := client.NewClient(id, logger, conn)
 					defer client.CloseConn()
 
+					ctrlc := make(chan os.Signal)
+					signal.Notify(ctrlc, os.Interrupt, syscall.SIGTERM)
+					go func() {
+						<-ctrlc
+						fmt.Println("\r- Turning off microphone...")
+						stream.Close()
+						client.CloseConn()
+						os.Exit(0)
+					}()
+
 					speaker.Play(client.Muxer)
 
-					ctx:= context.Background()
 					err = client.Call(ctx, c.String("room"), stream, format)
 					if err != nil {
 						return err

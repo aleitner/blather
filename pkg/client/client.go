@@ -73,8 +73,7 @@ func (client *Client) Call(ctx context.Context, room string, audioInput beep.Str
 	// Send data
 	go func() {
 		for {
-			sampleRate := 512
-			buf := make([][2]float64, sampleRate) // Optimal sending size is 16KiB-64KiB
+			buf := make([][2]float64, 512) // Optimal sending size is 16KiB-64KiB
 			numSamples, ok := audioInput.Stream(buf)
 			if !ok {
 				// server returns with nil
