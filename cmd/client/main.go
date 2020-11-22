@@ -8,10 +8,14 @@ import (
 	"time"
 
 	"github.com/aleitner/blather/pkg/client"
+	"github.com/aleitner/microphone"
+	"github.com/faiface/beep"
 	"github.com/faiface/beep/mp3"
+	"github.com/faiface/beep/speaker"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 	"google.golang.org/grpc"
+	"github.com/gen2brain/malgo"
 )
 
 func main() {
@@ -66,9 +70,38 @@ func main() {
 					},
 				},
 				Action: func(c *cli.Context) error {
+					mctx, err := malgo.InitContext(nil, malgo.ContextConfig{}, func(message string) {
+						fmt.Printf("LOG <%v>\n", message)
+					})
+					if err != nil {
+						fmt.Println(err)
+						os.Exit(1)
+					}
+					defer func() {
+						_ = mctx.Uninit()
+						mctx.Free()
+					}()
+
+					deviceConfig := malgo.DefaultDeviceConfig(malgo.Capture)
+					deviceConfig.Capture.Format = malgo.FormatS24
+					deviceConfig.Capture.Channels = 2
+					deviceConfig.SampleRate = 44100
+
+					stream, format, err := microphone.OpenStream(mctx, deviceConfig)
+					if err != nil {
+						log.Fatal(err)
+					}
+
+					defer stream.Close()
+
+					speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
+
+					stream.Start()
+					defer stream.Stop()
+
 					// Set up connection with rpc server
 					var conn *grpc.ClientConn
-					conn, err := grpc.Dial(c.String("address"), grpc.WithInsecure())
+					conn, err = grpc.Dial(c.String("address"), grpc.WithInsecure())
 					if err != nil {
 						log.Fatalf("grpc Dial fail: %s/n", err)
 					}
@@ -79,21 +112,10 @@ func main() {
 					client := client.NewClient(id, logger, conn)
 					defer client.CloseConn()
 
-					filepath := c.Args().First()
-					f, err := os.Open(filepath)
-					if err != nil {
-						return err
-					}
+					speaker.Play(client.Muxer)
 
 					ctx:= context.Background()
-
-					streamer, format, err := mp3.Decode(f)
-					if err != nil {
-						return err
-					}
-					defer streamer.Close()
-
-					err = client.Call(ctx, c.String("room"), streamer, format)
+					err = client.Call(ctx, c.String("room"), stream, format)
 					if err != nil {
 						return err
 					}

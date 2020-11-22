@@ -22,22 +22,22 @@ type CallClient interface {
 }
 
 type Client struct {
-	id         int
-	logger     *log.Logger
-	route      blatherpb.PhoneClient
-	conn       *grpc.ClientConn
-	muxer      *muxer.Muxer
-	sr 		   beep.SampleRate
-	quality    int
+	id      int
+	logger  *log.Logger
+	route   blatherpb.PhoneClient
+	conn    *grpc.ClientConn
+	Muxer   *muxer.Muxer
+	sr      beep.SampleRate
+	quality int
 }
 
-func NewClient(id int, logger *log.Logger, conn *grpc.ClientConn) CallClient {
+func NewClient(id int, logger *log.Logger, conn *grpc.ClientConn) *Client {
 	return &Client{
-		id:         id,
-		logger:     logger,
-		conn:       conn,
-		route:      blatherpb.NewPhoneClient(conn),
-		muxer:      muxer.NewMuxer(),
+		id:     id,
+		logger: logger,
+		conn:   conn,
+		route:  blatherpb.NewPhoneClient(conn),
+		Muxer:  muxer.NewMuxer(),
 
 		// Audio mixing
 		sr: beep.SampleRate(44100),
@@ -114,8 +114,8 @@ func (client *Client) Call(ctx context.Context, room string, audioInput beep.Str
 				break
 			}
 
-			// Add audio data to muxer
-			client.muxer.Add(res)
+			// Add audio data to Muxer
+			client.Muxer.Add(res)
 		}
 
 		wg.Done()
