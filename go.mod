@@ -3,6 +3,7 @@ module github.com/aleitner/blather
 go 1.15
 
 require (
+	github.com/aleitner/microphone v0.0.0-20201122030022-d6399c25ddd4
 	github.com/faiface/beep v1.0.2
 	github.com/gen2brain/malgo v0.10.25
 	github.com/golang/protobuf v1.4.3

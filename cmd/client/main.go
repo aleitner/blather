@@ -9,8 +9,6 @@ import (
 
 	"github.com/aleitner/blather/pkg/client"
 	"github.com/aleitner/microphone"
-	"github.com/faiface/beep"
-	"github.com/faiface/beep/mp3"
 	"github.com/faiface/beep/speaker"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
