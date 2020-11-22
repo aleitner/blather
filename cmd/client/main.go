@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/aleitner/blather/pkg/client"
@@ -90,12 +92,17 @@ func main() {
 						log.Fatal(err)
 					}
 
-					defer stream.Close()
-
 					speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
 
 					stream.Start()
-					defer stream.Stop()
+
+					ctrlc := make(chan os.Signal)
+					signal.Notify(ctrlc, os.Interrupt, syscall.SIGTERM)
+					go func() {
+						<-ctrlc
+						fmt.Println("\r- Turning off microphone...")
+						stream.Close()
+					}()
 
 					// Set up connection with rpc server
 					var conn *grpc.ClientConn
