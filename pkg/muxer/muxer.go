@@ -4,7 +4,7 @@ import (
 	"sync"
 
 	"github.com/aleitner/blather/internal/utils"
-	"github.com/aleitner/blather/pkg/protobuf"
+	blatherpb "github.com/aleitner/blather/pkg/protobuf"
 	"github.com/aleitner/blather/pkg/queue"
 	"github.com/aleitner/blather/pkg/strmr"
 	"github.com/aleitner/blather/pkg/userid"
@@ -15,13 +15,12 @@ import (
 type Muxer struct {
 	Queues sync.Map
 
-	mtx sync.Mutex
+	mtx           sync.Mutex
 	streamerCount int
 }
 
 func NewMuxer() *Muxer {
-	return &Muxer{
-	}
+	return &Muxer{}
 }
 
 func (m Muxer) Len() int {
@@ -73,31 +72,42 @@ func (m *Muxer) Stream(samples [][2]float64) (n int, ok bool) {
 		samples[i] = [2]float64{}
 	}
 
+	n = 0
+
 	for m.Len() > 0 && n < toStream {
 		m.Queues.Range(func(key interface{}, value interface{}) bool {
 			st := value.(beep.Streamer)
+
 			id := userid.ID(key.(uint64))
+
+			_, bok := streamedCount[id]
+			if !bok {
+				streamedCount[id] = 0
+			}
 			// mix the stream
 			sn, sok := st.Stream(tmp[streamedCount[id]:toStream])
-			for i := range tmp[:sn] {
-				samples[i][0] += tmp[i][0]
-				samples[i][1] += tmp[i][1]
-			}
-
-			if !sok {
-				// remove drained streamer
-				m.Delete(id)
-			}
 
 			streamedCount[id] += sn
 
 			if streamedCount[id] > n {
 				n = streamedCount[id]
 			}
+
+			if !sok {
+				m.Delete(id)
+				return false
+			}
+
 			return true
 		})
 	}
 
+	if n > 0 {
+		for i := range tmp[:n] {
+			samples[i][0] += tmp[i][0]
+			samples[i][1] += tmp[i][1]
+		}
+	}
 	return n, true
 }
 

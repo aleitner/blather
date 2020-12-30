@@ -26,23 +26,25 @@ func NewStreamer(samples [][2]float64, numSamples int) *Streamer {
 func (s *Streamer) Stream(samples [][2]float64) (n int, ok bool) {
 	s.mtx.Lock()
 	defer s.mtx.Unlock()
-	
+
 	// Stream is already empty
 	if s.numSamples == 0 {
 		return 0, false
 	}
-	
+
 	numSamplesStreamed := 0
-	for i := range samples {
+
+	maxsamples := len(samples)
+	maxssamplesoffset := len(s.samples) - s.numSamples
+	for i := 0; i < maxsamples; i++ {
 		if s.numSamples == 0 {
 			break
 		}
-
-		samples[i] = s.samples[i]
+		samples[numSamplesStreamed] = s.samples[maxssamplesoffset+numSamplesStreamed]
 		s.numSamples--
 		numSamplesStreamed++
 	}
-	
+
 	return numSamplesStreamed, true
 }
 

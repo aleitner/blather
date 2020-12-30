@@ -11,6 +11,7 @@ import (
 
 	"github.com/aleitner/blather/pkg/client"
 	"github.com/aleitner/microphone"
+	"github.com/faiface/beep"
 	"github.com/faiface/beep/speaker"
 	"github.com/gen2brain/malgo"
 	log "github.com/sirupsen/logrus"
@@ -20,9 +21,9 @@ import (
 
 func main() {
 	app := &cli.App{
-		Flags: []cli.Flag {
+		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name: "address",
+				Name:  "address",
 				Value: ":8080",
 				Usage: "port of server being ",
 			},
@@ -46,7 +47,7 @@ func main() {
 					client := client.NewClient(id, logger, conn)
 					defer client.CloseConn()
 
-					ctx:= context.Background()
+					ctx := context.Background()
 
 					roomID, err := client.CreateRoom(ctx)
 					if err != nil {
@@ -61,16 +62,16 @@ func main() {
 				Name:    "join",
 				Aliases: []string{"j"},
 				Usage:   "join a call room",
-				Flags: []cli.Flag {
+				Flags: []cli.Flag{
 					&cli.StringFlag{
-						Name: "room",
-						Value: "",
-						Usage: "room number",
+						Name:     "room",
+						Value:    "",
+						Usage:    "room number",
 						Required: true,
 					},
 				},
 				Action: func(c *cli.Context) error {
-					ctx:= context.Background()
+					ctx := context.Background()
 
 					mctx, err := malgo.InitContext(nil, malgo.ContextConfig{}, func(message string) {
 						fmt.Printf("LOG <%v>\n", message)
@@ -121,7 +122,7 @@ func main() {
 						os.Exit(0)
 					}()
 
-					speaker.Play(client.Muxer)
+					speaker.Play(beep.Seq(client.Muxer))
 
 					err = client.Call(ctx, c.String("room"), stream, format)
 					if err != nil {
