@@ -87,6 +87,11 @@ func (m *Muxer) Stream(samples [][2]float64) (n int, ok bool) {
 			// mix the stream
 			sn, sok := st.Stream(tmp[streamedCount[id]:toStream])
 
+			for i := range tmp[:sn] {
+				samples[i][0] += tmp[i][0]
+				samples[i][1] += tmp[i][1]
+			}
+
 			streamedCount[id] += sn
 
 			if streamedCount[id] > n {
@@ -99,13 +104,6 @@ func (m *Muxer) Stream(samples [][2]float64) (n int, ok bool) {
 
 			return true
 		})
-	}
-
-	if n > 0 {
-		for i := range tmp[:n] {
-			samples[i][0] += tmp[i][0]
-			samples[i][1] += tmp[i][1]
-		}
 	}
 	return n, true
 }
