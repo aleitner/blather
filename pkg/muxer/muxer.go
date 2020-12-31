@@ -95,7 +95,6 @@ func (m *Muxer) Stream(samples [][2]float64) (n int, ok bool) {
 
 			if !sok {
 				m.Delete(id)
-				return false
 			}
 
 			return true
