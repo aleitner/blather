@@ -90,8 +90,8 @@ func (bs *BlatherServer) CreateRoom(ctx context.Context, req *blatherpb.CreateRo
 		rand.Seed(time.Now().UnixNano())
 		roomID := utils.RandSeq(6)
 
-		room := bs.rooms[roomID]
-		if room == nil {
+		_, ok := bs.rooms[roomID]
+		if !ok {
 			bs.rooms[roomID] = f
 			bs.logger.Infof("Created room %s", roomID)
 
