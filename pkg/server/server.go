@@ -28,7 +28,7 @@ type BlatherServer struct {
 func NewBlatherServer(logger *log.Logger) blatherpb.PhoneServer {
 	return &BlatherServer{
 		logger: logger,
-		rooms: make(map[string]*forwarder.Forwarder),
+		rooms:  make(map[string]*forwarder.Forwarder),
 	}
 }
 
