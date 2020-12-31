@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+	logger := log.New()
 
 	// start grpc server
 	lis, err := net.Listen("tcp", ":8080")
@@ -20,16 +21,17 @@ func main() {
 	}
 	defer lis.Close()
 
+	logger.Infof("Now serving %s", lis.Addr().String())
+
 	grpcServer := grpc.NewServer()
 
-	logger := log.New()
 	s := server.NewBlatherServer(logger)
 	server.RegisterBlatherServer(grpcServer, s)
 
 	defer grpcServer.GracefulStop()
 	err = grpcServer.Serve(lis)
 	if err != nil {
-		fmt.Println("failed")
+		fmt.Println(err)
 		os.Exit(1)
 	}
 }

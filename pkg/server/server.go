@@ -48,6 +48,8 @@ func (bs *BlatherServer) Call(stream blatherpb.Phone_CallServer) error {
 		return fmt.Errorf("Room %s is not a valid room id", md.RoomID)
 	}
 
+	bs.logger.Infof("%s has joined room %s", md.ClientID.String(), md.RoomID)
+
 	f := room.(*forwarder.Forwarder)
 
 	// Create forwarder for client
@@ -63,9 +65,10 @@ func (bs *BlatherServer) Call(stream blatherpb.Phone_CallServer) error {
 			data, err := stream.Recv()
 			if err != nil {
 				if err != io.EOF {
-					bs.logger.Error(err.Error())
+					bs.logger.Errorf("%s, %s, %s", md.ClientID.String(), md.RoomID, err.Error())
 				}
 
+				bs.logger.Infof("%s has left room %s", md.ClientID.String(), md.RoomID)
 				break
 			}
 
@@ -89,6 +92,8 @@ func (bs *BlatherServer) CreateRoom(ctx context.Context, req *blatherpb.CreateRo
 		roomID := utils.RandSeq(6)
 		_, loaded := bs.rooms.LoadOrStore(roomID, f)
 		if !loaded {
+			bs.logger.Infof("Created room %s", roomID)
+
 			return &blatherpb.CreateRoomResp{
 				Id: roomID,
 			}, nil
