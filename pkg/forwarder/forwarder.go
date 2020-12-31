@@ -26,9 +26,7 @@ func NewForwarder() *Forwarder {
 
 // Forward will forward the data from id
 func (f *Forwarder) Forward(id userid.ID, data *call.CallData) {
-	recipients := f.transferAgents
-
-	for streamId, stream := range recipients {
+	for streamId, stream := range f.transferAgents {
 		if streamId == id { // Don't need to forward data back to sender
 			continue
 		}
@@ -36,7 +34,6 @@ func (f *Forwarder) Forward(id userid.ID, data *call.CallData) {
 		if err := stream.Send(data); err != nil {
 			f.logger.Error(err)
 		}
-
 	}
 }
 
