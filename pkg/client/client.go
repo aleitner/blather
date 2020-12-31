@@ -40,7 +40,7 @@ func NewClient(id int, logger *log.Logger, conn *grpc.ClientConn) *Client {
 		Muxer:  muxer.NewMuxer(),
 
 		// Audio mixing
-		sr: beep.SampleRate(44100),
+		sr:      beep.SampleRate(44100),
 		quality: 4,
 	}
 }
@@ -89,8 +89,8 @@ func (client *Client) Call(ctx context.Context, room string, audioInput beep.Str
 
 			if err := stream.Send(&blatherpb.CallData{
 				AudioData: &blatherpb.AudioData{
-					Samples:       utils.ToGRPCSampleRate(buf, numSamples),
-					NumSamples:    uint32(numSamples),
+					Samples:    utils.ToGRPCSampleRate(buf, numSamples),
+					NumSamples: uint32(numSamples),
 				},
 				UserId: uint64(client.id),
 			}); err != nil {

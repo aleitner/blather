@@ -13,18 +13,18 @@ func TestQueue(t *testing.T) {
 	{ // perfect scenario
 		q := queue.NewQueue()
 
-		samples1 := [][2]float64{[2]float64{1,1},[2]float64{2,2},[2]float64{3,3}}
+		samples1 := [][2]float64{[2]float64{1, 1}, [2]float64{2, 2}, [2]float64{3, 3}}
 		stream := strmr.NewStreamer(samples1, len(samples1))
 		q.Add(stream)
 
-		samples2 := [][2]float64{[2]float64{4,4},[2]float64{5,5},[2]float64{6,6}}
+		samples2 := [][2]float64{[2]float64{4, 4}, [2]float64{5, 5}, [2]float64{6, 6}}
 		stream = strmr.NewStreamer(samples2, len(samples2))
 		q.Add(stream)
 
-		actual := make([][2]float64, len(samples2) + len(samples1))
+		actual := make([][2]float64, len(samples2)+len(samples1))
 
 		n, ok := q.Stream(actual)
-		assert.Equal(t, len(samples2) + len(samples1), n)
+		assert.Equal(t, len(samples2)+len(samples1), n)
 
 		var samples [][2]float64
 		samples = append(samples, samples1...)
@@ -39,4 +39,3 @@ func TestQueue(t *testing.T) {
 		assert.False(t, ok)
 	}
 }
-

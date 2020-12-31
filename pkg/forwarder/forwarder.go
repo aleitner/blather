@@ -26,29 +26,20 @@ func NewForwarder() *Forwarder {
 
 // Forward will forward the data from id
 func (f *Forwarder) Forward(id userid.ID, data *call.CallData) {
-	var wg sync.WaitGroup // NB: We probably don't actually need this wait group
-
 	f.transferAgents.Range(func(key interface{}, value interface{}) bool {
-		wg.Add(1)
+		streamId := key.(userid.ID)
+		stream := value.(TransferAgent)
 
-		go func() {
-			defer wg.Done()
+		if streamId == id { // Don't need to forward data back to sender
+			return true
+		}
 
-			streamId := key.(userid.ID)
-			stream := value.(TransferAgent)
+		if err := stream.Send(data); err != nil {
+			f.logger.Error(err)
+		}
 
-			if streamId == id { // Don't need to forward data back to sender
-				return
-			}
-
-			if err := stream.Send(data); err != nil {
-				f.logger.Error(err)
-			}
-		}()
 		return true
 	})
-
-	wg.Wait()
 }
 
 // ConnectionCount will count number of transferAgents

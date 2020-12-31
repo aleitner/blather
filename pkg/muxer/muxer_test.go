@@ -11,11 +11,11 @@ import (
 func generateCallData(samples [][2]float64, sampleNum, sampleRate, id int) *blatherpb.CallData {
 	utils.ToGRPCSampleRate(samples, sampleNum)
 	return &blatherpb.CallData{
-		AudioData:    &blatherpb.AudioData{
-			Samples:       utils.ToGRPCSampleRate(samples, sampleNum),
-			NumSamples:    uint32(sampleNum),
+		AudioData: &blatherpb.AudioData{
+			Samples:    utils.ToGRPCSampleRate(samples, sampleNum),
+			NumSamples: uint32(sampleNum),
 		},
-		UserId:          uint64(id),
+		UserId: uint64(id),
 	}
 }
 
@@ -23,11 +23,11 @@ func TestMuxer(t *testing.T) {
 
 	{ // Perfect Scenario
 		m := muxer.NewMuxer()
-		samples1 := [][2]float64{[2]float64{1,2}}
+		samples1 := [][2]float64{[2]float64{1, 2}}
 		data1 := generateCallData(samples1, len(samples1), 44100, 1)
 		m.Add(data1)
 
-		samples2 := [][2]float64{[2]float64{3,4}}
+		samples2 := [][2]float64{[2]float64{3, 4}}
 		data2 := generateCallData(samples2, len(samples2), 44100, 1)
 		m.Add(data2)
 
@@ -48,15 +48,15 @@ func TestMuxer(t *testing.T) {
 
 	{ // Properly Mix Audio
 		m := muxer.NewMuxer()
-		samples1 := [][2]float64{[2]float64{1,2}}
+		samples1 := [][2]float64{[2]float64{1, 2}}
 		data1 := generateCallData(samples1, len(samples1), 44100, 1)
 		m.Add(data1)
 
-		samples2 := [][2]float64{[2]float64{3,4}}
+		samples2 := [][2]float64{[2]float64{3, 4}}
 		data2 := generateCallData(samples2, len(samples2), 44100, 2)
 		m.Add(data2)
 
-		expectedSamples := [][2]float64{[2]float64{4,6}}
+		expectedSamples := [][2]float64{[2]float64{4, 6}}
 
 		actualSamples := make([][2]float64, 10)
 		n, ok := m.Stream(actualSamples)
@@ -71,15 +71,15 @@ func TestMuxer(t *testing.T) {
 
 	{ // Properly Mix Audio of varying lengths
 		m := muxer.NewMuxer()
-		samples1 := [][2]float64{[2]float64{1,1},[2]float64{1,1}}
+		samples1 := [][2]float64{[2]float64{1, 1}, [2]float64{1, 1}}
 		data1 := generateCallData(samples1, len(samples1), 44100, 1)
 		m.Add(data1)
 
-		samples2 := [][2]float64{[2]float64{4,4}}
+		samples2 := [][2]float64{[2]float64{4, 4}}
 		data2 := generateCallData(samples2, len(samples2), 44100, 2)
 		m.Add(data2)
 
-		expectedSamples := [][2]float64{[2]float64{5,5}, [2]float64{1,1}}
+		expectedSamples := [][2]float64{[2]float64{5, 5}, [2]float64{1, 1}}
 
 		actualSamples := make([][2]float64, 10)
 		n, ok := m.Stream(actualSamples)
@@ -94,15 +94,15 @@ func TestMuxer(t *testing.T) {
 
 	{ // Properly Mix Audio of varying lengths
 		m := muxer.NewMuxer()
-		samples1 := [][2]float64{[2]float64{1,1},[2]float64{1,1},[2]float64{1,1},[2]float64{1,1}}
+		samples1 := [][2]float64{[2]float64{1, 1}, [2]float64{1, 1}, [2]float64{1, 1}, [2]float64{1, 1}}
 		data1 := generateCallData(samples1, len(samples1), 44100, 1)
 		m.Add(data1)
 
-		samples2 := [][2]float64{[2]float64{4,4}}
+		samples2 := [][2]float64{[2]float64{4, 4}}
 		data2 := generateCallData(samples2, len(samples2), 44100, 2)
 		m.Add(data2)
 
-		expectedSamples := [][2]float64{[2]float64{5,5}, [2]float64{1,1}, [2]float64{1,1}}
+		expectedSamples := [][2]float64{[2]float64{5, 5}, [2]float64{1, 1}, [2]float64{1, 1}}
 
 		actualSamples := make([][2]float64, 3)
 		n, ok := m.Stream(actualSamples)
@@ -110,13 +110,13 @@ func TestMuxer(t *testing.T) {
 		assert.Equal(t, len(expectedSamples), n)
 		assert.Equal(t, expectedSamples, actualSamples[:n])
 
-		samples3 := [][2]float64{[2]float64{1,1}}
+		samples3 := [][2]float64{[2]float64{1, 1}}
 		data3 := generateCallData(samples3, len(samples3), 44100, 2)
 		m.Add(data3)
 		n, ok = m.Stream(actualSamples)
 		assert.True(t, ok)
 		assert.Equal(t, 1, n)
-		assert.Equal(t, [][2]float64{[2]float64{2,2}}, actualSamples[:n])
+		assert.Equal(t, [][2]float64{[2]float64{2, 2}}, actualSamples[:n])
 
 		n, ok = m.Stream(actualSamples)
 		assert.True(t, ok)

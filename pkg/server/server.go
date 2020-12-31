@@ -20,14 +20,15 @@ import (
 
 // BlatherServer forwards call data to all the clients
 type BlatherServer struct {
-	logger    *log.Logger
-	rooms 	sync.Map
+	logger *log.Logger
+	rooms  map[string]*forwarder.Forwarder
 }
 
 // NewBlatherServer
 func NewBlatherServer(logger *log.Logger) blatherpb.PhoneServer {
 	return &BlatherServer{
-		logger:    logger,
+		logger: logger,
+		rooms: make(map[string]*forwarder.Forwarder),
 	}
 }
 
@@ -43,18 +44,16 @@ func (bs *BlatherServer) Call(stream blatherpb.Phone_CallServer) error {
 		return fmt.Errorf("Failed to retrieve incoming metadata: %s", err.Error())
 	}
 
-	room, ok := bs.rooms.Load(md.RoomID)
-	if !ok {
+	room := bs.rooms[md.RoomID]
+	if room == nil {
 		return fmt.Errorf("Room %s is not a valid room id", md.RoomID)
 	}
 
 	bs.logger.Infof("%s has joined room %s", md.ClientID.String(), md.RoomID)
 
-	f := room.(*forwarder.Forwarder)
-
 	// Create forwarder for client
-	f.Add(md.ClientID, stream)
-	defer f.Delete(md.ClientID)
+	room.Add(md.ClientID, stream)
+	defer room.Delete(md.ClientID)
 
 	var wg sync.WaitGroup // NB: we can probably just use a channel here
 
@@ -73,7 +72,7 @@ func (bs *BlatherServer) Call(stream blatherpb.Phone_CallServer) error {
 			}
 
 			// Forward the data to the other clients
-			f.Forward(md.ClientID, data)
+			room.Forward(md.ClientID, data)
 		}
 
 		wg.Done()
@@ -90,8 +89,10 @@ func (bs *BlatherServer) CreateRoom(ctx context.Context, req *blatherpb.CreateRo
 	for i := 0; i < 1; i++ {
 		rand.Seed(time.Now().UnixNano())
 		roomID := utils.RandSeq(6)
-		_, loaded := bs.rooms.LoadOrStore(roomID, f)
-		if !loaded {
+
+		room := bs.rooms[roomID]
+		if room == nil {
+			bs.rooms[roomID] = f
 			bs.logger.Infof("Created room %s", roomID)
 
 			return &blatherpb.CreateRoomResp{
@@ -113,7 +114,7 @@ func (bs *BlatherServer) UpdateSettings(ctx context.Context, userdata *blatherpb
 
 type MD struct {
 	ClientID userid.ID
-	RoomID string
+	RoomID   string
 }
 
 func expandMetaData(ctx context.Context) (*MD, error) {
@@ -141,6 +142,6 @@ func expandMetaData(ctx context.Context) (*MD, error) {
 
 	return &MD{
 		ClientID: contactID,
-		RoomID: RoomID[0],
+		RoomID:   RoomID[0],
 	}, nil
 }
