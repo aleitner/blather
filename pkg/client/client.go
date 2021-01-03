@@ -37,7 +37,7 @@ func NewClient(id int, logger *log.Logger, conn *grpc.ClientConn) *Client {
 		logger: logger,
 		conn:   conn,
 		route:  blatherpb.NewPhoneClient(conn),
-		Muxer:  muxer.NewMuxer(),
+		Muxer:  muxer.NewMuxer(logger),
 
 		// Audio mixing
 		sr:      beep.SampleRate(44100),
@@ -73,8 +73,8 @@ func (client *Client) Call(ctx context.Context, room string, audioInput beep.Str
 	// Send data
 	go func() {
 		for {
-			buf := make([][2]float64, 512) // Optimal sending size is 16KiB-64KiB
-			numSamples, ok := audioInput.Stream(buf)
+			buf := make([][2]float64, 1024 * 16) // Optimal sending size is 16KiB-64KiB
+			numSamples, ok := resampled.Stream(buf)
 			if !ok {
 				// server returns with nil
 				if resampled.Err() != nil {

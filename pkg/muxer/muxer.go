@@ -1,30 +1,30 @@
 package muxer
 
 import (
-	"sync"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/aleitner/blather/internal/utils"
 	blatherpb "github.com/aleitner/blather/pkg/protobuf"
 	"github.com/aleitner/blather/pkg/queue"
 	"github.com/aleitner/blather/pkg/strmr"
 	"github.com/aleitner/blather/pkg/userid"
-	"github.com/faiface/beep"
 )
 
 // Muxer
 type Muxer struct {
-	Queues sync.Map
-
-	mtx           sync.Mutex
-	streamerCount int
+	logger *log.Logger
+	Queues map[userid.ID]*queue.Queue
 }
 
-func NewMuxer() *Muxer {
-	return &Muxer{}
+func NewMuxer(logger *log.Logger) *Muxer {
+	return &Muxer{
+		logger: logger,
+		Queues: make(map[userid.ID]*queue.Queue),
+	}
 }
 
 func (m Muxer) Len() int {
-	return m.streamerCount
+	return len(m.Queues)
 }
 
 func (m *Muxer) Add(data *blatherpb.CallData) {
@@ -35,27 +35,21 @@ func (m *Muxer) Add(data *blatherpb.CallData) {
 
 	grpcSamples := audioData.GetSamples()
 	numSamples := int(audioData.GetNumSamples())
-	id := data.GetUserId()
+	id := userid.ID(data.GetUserId())
 
 	samples := utils.ToSampleRate(grpcSamples, numSamples)
 	streamer := strmr.NewStreamer(samples, numSamples)
 
-	newQ := queue.NewQueue()
-	q, _ := m.Queues.LoadOrStore(id, newQ)
-	q.(*queue.Queue).Add(streamer)
-	m.Queues.Store(id, q)
-
-	m.mtx.Lock()
-	defer m.mtx.Unlock()
-	m.streamerCount++
+	q, ok := m.Queues[id]
+	if !ok {
+		q = queue.NewQueue()
+		m.Queues[id] = q
+	}
+	q.Add(streamer)
 }
 
 func (m *Muxer) Delete(id userid.ID) {
-	m.Queues.Delete(id)
-
-	m.mtx.Lock()
-	defer m.mtx.Unlock()
-	m.streamerCount--
+	delete(m.Queues, id)
 }
 
 func (m *Muxer) Stream(samples [][2]float64) (n int, ok bool) {
@@ -75,10 +69,7 @@ func (m *Muxer) Stream(samples [][2]float64) (n int, ok bool) {
 	n = 0
 
 	for m.Len() > 0 && n < toStream {
-		m.Queues.Range(func(key interface{}, value interface{}) bool {
-			st := value.(beep.Streamer)
-
-			id := userid.ID(key.(uint64))
+			for id, st := range m.Queues {
 
 			_, bok := streamedCount[id]
 			if !bok {
@@ -101,9 +92,7 @@ func (m *Muxer) Stream(samples [][2]float64) (n int, ok bool) {
 			if !sok {
 				m.Delete(id)
 			}
-
-			return true
-		})
+		}
 	}
 	return n, true
 }

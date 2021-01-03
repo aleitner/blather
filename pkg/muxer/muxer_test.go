@@ -4,6 +4,7 @@ import (
 	"github.com/aleitner/blather/internal/utils"
 	"github.com/aleitner/blather/pkg/muxer"
 	blatherpb "github.com/aleitner/blather/pkg/protobuf"
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -22,7 +23,7 @@ func generateCallData(samples [][2]float64, sampleNum, sampleRate, id int) *blat
 func TestMuxer(t *testing.T) {
 
 	{ // Perfect Scenario
-		m := muxer.NewMuxer()
+		m := muxer.NewMuxer(log.New())
 		samples1 := [][2]float64{[2]float64{1, 2}}
 		data1 := generateCallData(samples1, len(samples1), 44100, 1)
 		m.Add(data1)
@@ -47,7 +48,7 @@ func TestMuxer(t *testing.T) {
 	}
 
 	{ // Properly Mix Audio
-		m := muxer.NewMuxer()
+		m := muxer.NewMuxer(log.New())
 		samples1 := [][2]float64{[2]float64{1, 2}}
 		data1 := generateCallData(samples1, len(samples1), 44100, 1)
 		m.Add(data1)
@@ -70,7 +71,7 @@ func TestMuxer(t *testing.T) {
 	}
 
 	{ // Properly Mix Audio of varying lengths
-		m := muxer.NewMuxer()
+		m := muxer.NewMuxer(log.New())
 		samples1 := [][2]float64{[2]float64{1, 1}, [2]float64{1, 1}}
 		data1 := generateCallData(samples1, len(samples1), 44100, 1)
 		m.Add(data1)
@@ -93,7 +94,7 @@ func TestMuxer(t *testing.T) {
 	}
 
 	{ // Properly Mix Audio of varying lengths
-		m := muxer.NewMuxer()
+		m := muxer.NewMuxer(log.New())
 		samples1 := [][2]float64{[2]float64{1, 1}, [2]float64{1, 1}, [2]float64{1, 1}, [2]float64{1, 1}}
 		data1 := generateCallData(samples1, len(samples1), 44100, 1)
 		m.Add(data1)

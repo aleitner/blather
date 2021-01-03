@@ -1,9 +1,6 @@
 package strmr
 
-import "sync"
-
 type Streamer struct {
-	mtx        sync.Mutex
 	samples    [][2]float64
 	numSamples int
 }
@@ -24,9 +21,6 @@ func NewStreamer(samples [][2]float64, numSamples int) *Streamer {
 }
 
 func (s *Streamer) Stream(samples [][2]float64) (n int, ok bool) {
-	s.mtx.Lock()
-	defer s.mtx.Unlock()
-
 	// Stream is already empty
 	if s.numSamples == 0 {
 		return 0, false
