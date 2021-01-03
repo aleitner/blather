@@ -71,9 +71,10 @@ func main() {
 				},
 				Action: func(c *cli.Context) error {
 					ctx := context.Background()
+					var logger = log.New()
 
 					mctx, err := malgo.InitContext(nil, malgo.ContextConfig{}, func(message string) {
-						fmt.Printf("LOG <%v>\n", message)
+						log.Debugf("malgo log: %v\n", message)
 					})
 					if err != nil {
 						fmt.Println(err)
@@ -107,13 +108,12 @@ func main() {
 
 					var id = rand.New(rand.NewSource(time.Now().UnixNano())).Int()
 
-					var logger = log.New()
 					client := client.NewClient(id, logger, conn)
 					defer client.CloseConn()
 
 					speaker.Play(beep.Seq(client.Muxer))
 
-					err = client.Call(ctx, c.String("room"), stream, format)
+					err = client.Call(ctx, c.String("room"), stream, int(format.SampleRate))
 					if err != nil {
 						return err
 					}

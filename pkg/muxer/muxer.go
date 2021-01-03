@@ -38,7 +38,7 @@ func (m *Muxer) Add(data *blatherpb.CallData) {
 	id := userid.ID(data.GetUserId())
 
 	samples := utils.ToSampleRate(grpcSamples, numSamples)
-	streamer := strmr.NewStreamer(samples, numSamples)
+	streamer := strmr.NewStreamer(samples)
 
 	q, ok := m.Queues[id]
 	if !ok {

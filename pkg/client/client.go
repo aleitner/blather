@@ -24,13 +24,13 @@ type CallClient interface {
 }
 
 type Client struct {
-	id      int
-	logger  *log.Logger
-	route   blatherpb.PhoneClient
-	conn    *grpc.ClientConn
-	Muxer   *muxer.Muxer
-	sr      beep.SampleRate
-	quality int
+	id           int
+	logger       *log.Logger
+	route        blatherpb.PhoneClient
+	conn         *grpc.ClientConn
+	Muxer        *muxer.Muxer
+	resampleRate beep.SampleRate
+	quality      int
 }
 
 func NewClient(id int, logger *log.Logger, conn *grpc.ClientConn) *Client {
@@ -42,8 +42,8 @@ func NewClient(id int, logger *log.Logger, conn *grpc.ClientConn) *Client {
 		Muxer:  muxer.NewMuxer(logger),
 
 		// Audio mixing
-		sr:      beep.SampleRate(22050),
-		quality: 4,
+		resampleRate: beep.SampleRate(11025),
+		quality:      4,
 	}
 }
 
@@ -56,14 +56,14 @@ func (client *Client) CreateRoom(ctx context.Context) (roomID string, err error)
 	return resp.GetId(), nil
 }
 
-func (client *Client) Call(ctx context.Context, room string, audioInput beep.Streamer, format beep.Format) error {
+func (client *Client) Call(ctx context.Context, room string, audioInput beep.Streamer, inputSampleRate int) error {
 	clientId := strconv.Itoa(client.id)
 	md := metadata.Pairs("client-id", clientId, "room-id", room)
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
 	// Resample audio
 	// NB: Perhaps we can determine the sample rate based on everyone's connections
-	resampled := beep.Resample(client.quality, format.SampleRate, client.sr, audioInput)
+	resampled := beep.Resample(client.quality, beep.SampleRate(inputSampleRate), client.resampleRate, audioInput)
 	resampled.SetRatio(1)
 
 	stream, err := client.route.Call(ctx, grpc.UseCompressor(gzip.Name))
@@ -95,6 +95,7 @@ func (client *Client) Call(ctx context.Context, room string, audioInput beep.Str
 				AudioData: &blatherpb.AudioData{
 					Samples:    utils.ToGRPCSampleRate(buf, numSamples),
 					NumSamples: uint32(numSamples),
+					SampleRate: uint32(inputSampleRate),
 				},
 				UserId: uint64(client.id),
 			}); err != nil {
@@ -131,6 +132,16 @@ func (client *Client) Call(ctx context.Context, room string, audioInput beep.Str
 
 	wg.Wait()
 	return nil
+}
+
+// SetResampleRate sets the sample rate for audio to be resampled to
+func (client *Client) SetResampleRate(sampleRate int) {
+	client.resampleRate = beep.SampleRate(sampleRate)
+}
+
+// SetResampleRate sets the sample rate for audio to be resampled to
+func (client *Client) SetResampleQuality(quality int) {
+	client.quality = quality
 }
 
 // CloseConn closes conn

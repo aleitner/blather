@@ -24,6 +24,7 @@ message CallData {
 message AudioData {
     repeated Sample samples = 1;
     uint32 num_samples = 2;
+    uint32 sample_rate = 3;
 }
 
 message Sample {
