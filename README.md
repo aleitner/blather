@@ -5,7 +5,7 @@ Library for making group calls that have spacial awareness
 
 #### Library:
 - [x] Stream audio to server
-- [x] Stream audio from server to clients
+- [x] Server forwards recieved audio to clients
 - [x] Combine all input sources into single stream
 - [x] Client resamples audio before sending out
 - [x] Add rooms to server for different chat groups
@@ -22,4 +22,4 @@ Library for making group calls that have spacial awareness
 - [ ] Front end
 - [ ] Change volume depending on distance
 - [ ] Pan audio depending on location
-- [ ] Get Mic Input [aleitner/microphone](https://github.com/aleitner/microphone)
+- [x] Get Mic Input [aleitner/microphone](https://github.com/aleitner/microphone)

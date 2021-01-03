@@ -25,18 +25,9 @@ func (q *Queue) Stream(samples [][2]float64) (n int, ok bool) {
 			break
 		}
 
-		toStream := len(samples) - filled
-		buf := make([][2]float64, toStream)
-
-		// NB: See if we can find a way to write directly into buf at different points
-		// We are currently making two copies of the same thing which is not performant
-		n, ok = q.streamers[0].Stream(buf)
+		n, ok = q.streamers[0].Stream(samples[filled:])
 		if !ok {
 			q.streamers = q.streamers[1:]
-		}
-
-		for i := 0; i < n; i++ {
-			samples[i+filled] = buf[i]
 		}
 
 		filled += n
