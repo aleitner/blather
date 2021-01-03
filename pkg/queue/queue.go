@@ -10,7 +10,7 @@ type Queue struct {
 
 func NewQueue() *Queue {
 	return &Queue{
-		streamers: make([]*strmr.Streamer, 0),
+		streamers: []*strmr.Streamer{},
 	}
 }
 
@@ -18,14 +18,13 @@ func (q *Queue) Add(streamer *strmr.Streamer) {
 	q.streamers = append(q.streamers, streamer)
 }
 
-func (q *Queue) Stream(samples [][2]float64) (n int, ok bool) {
-	filled := 0
+func (q *Queue) Stream(samples [][2]float64) (filled int, ok bool) {
 	for filled < len(samples) {
 		if len(q.streamers) == 0 {
 			break
 		}
 
-		n, ok = q.streamers[0].Stream(samples[filled:])
+		n, ok := q.streamers[0].Stream(samples[filled:])
 		if !ok {
 			q.streamers = q.streamers[1:]
 		}
