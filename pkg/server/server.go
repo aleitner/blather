@@ -12,6 +12,7 @@ import (
 	"github.com/aleitner/blather/pkg/userid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	_ "google.golang.org/grpc/encoding/gzip"
 
 	"github.com/aleitner/blather/pkg/forwarder"
 	"github.com/aleitner/blather/pkg/protobuf"

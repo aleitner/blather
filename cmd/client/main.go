@@ -9,6 +9,7 @@ import (
 
 	"github.com/aleitner/blather/pkg/client"
 	"github.com/aleitner/microphone"
+
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/speaker"
 	"github.com/gen2brain/malgo"

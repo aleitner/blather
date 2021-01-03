@@ -9,6 +9,8 @@ import (
 	"github.com/aleitner/blather/internal/utils"
 	"github.com/aleitner/blather/pkg/muxer"
 	"github.com/aleitner/blather/pkg/protobuf"
+
+	"google.golang.org/grpc/encoding/gzip"
 	"github.com/faiface/beep"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -64,7 +66,7 @@ func (client *Client) Call(ctx context.Context, room string, audioInput beep.Str
 	resampled := beep.Resample(client.quality, format.SampleRate, client.sr, audioInput)
 	resampled.SetRatio(1)
 
-	stream, err := client.route.Call(ctx)
+	stream, err := client.route.Call(ctx, grpc.UseCompressor(gzip.Name))
 	if err != nil {
 		return err
 	}
