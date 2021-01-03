@@ -10,7 +10,7 @@ import (
 func TestStreamer(t *testing.T) {
 
 	{ // perfect scenario
-		samples := [][2]float64{[2]float64{3,3},[2]float64{3,3},[2]float64{3,3}}
+		samples := [][2]float64{[2]float64{3, 3}, [2]float64{3, 3}, [2]float64{3, 3}}
 		numSamples := len(samples)
 
 		stream := strmr.NewStreamer(samples, numSamples)
@@ -30,7 +30,7 @@ func TestStreamer(t *testing.T) {
 	}
 
 	{ // Number of samples is greater than the actual number of samples
-		samples := [][2]float64{[2]float64{3,3}}
+		samples := [][2]float64{[2]float64{3, 3}}
 		numSamples := 2
 
 		stream := strmr.NewStreamer(samples, numSamples)
@@ -50,7 +50,7 @@ func TestStreamer(t *testing.T) {
 	}
 
 	{ // Number of samples to read is greater than the actual number of samples
-		samples := [][2]float64{[2]float64{3,3}}
+		samples := [][2]float64{[2]float64{3, 3}}
 		numSamples := 1
 
 		stream := strmr.NewStreamer(samples, numSamples)
@@ -70,7 +70,7 @@ func TestStreamer(t *testing.T) {
 	}
 
 	{ // Number of samples to read is less than the actual number of samples
-		samples := [][2]float64{[2]float64{3,3}, {3,3}, {3,3}}
+		samples := [][2]float64{[2]float64{3, 3}, {3, 3}, {3, 3}}
 
 		stream := strmr.NewStreamer(samples, len(samples))
 
@@ -83,7 +83,7 @@ func TestStreamer(t *testing.T) {
 		assert.True(t, ok)
 
 		n, ok = stream.Stream(actual)
-		assert.Equal(t, len(samples) - numSamplesToRead, n)
+		assert.Equal(t, len(samples)-numSamplesToRead, n)
 		assert.Equal(t, samples[:n], actual[:n])
 		assert.True(t, ok)
 
