@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
 	"github.com/aleitner/blather/pkg/client"
@@ -111,16 +109,6 @@ func main() {
 					var logger = log.New()
 					client := client.NewClient(id, logger, conn)
 					defer client.CloseConn()
-
-					ctrlc := make(chan os.Signal)
-					signal.Notify(ctrlc, os.Interrupt, syscall.SIGTERM)
-					go func() {
-						<-ctrlc
-						fmt.Println("\r- Turning off microphone...")
-						stream.Close()
-						client.CloseConn()
-						os.Exit(0)
-					}()
 
 					speaker.Play(beep.Seq(client.Muxer))
 
