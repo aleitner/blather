@@ -40,7 +40,7 @@ func NewClient(id int, logger *log.Logger, conn *grpc.ClientConn) *Client {
 		Muxer:  muxer.NewMuxer(logger),
 
 		// Audio mixing
-		sr:      beep.SampleRate(44100),
+		sr:      beep.SampleRate(22050),
 		quality: 4,
 	}
 }
@@ -73,7 +73,8 @@ func (client *Client) Call(ctx context.Context, room string, audioInput beep.Str
 	// Send data
 	go func() {
 		for {
-			buf := make([][2]float64, 1024 * 16) // Optimal sending size is 16KiB-64KiB
+			buf := make([][2]float64, 1536) // Optimal sending size is 16KiB-64KiB
+
 			numSamples, ok := resampled.Stream(buf)
 			if !ok {
 				// server returns with nil

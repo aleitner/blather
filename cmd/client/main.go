@@ -88,7 +88,7 @@ func main() {
 					deviceConfig := malgo.DefaultDeviceConfig(malgo.Capture)
 					deviceConfig.Capture.Format = malgo.FormatS24
 					deviceConfig.Capture.Channels = 2
-					deviceConfig.SampleRate = 44100
+					deviceConfig.SampleRate = 22050
 
 					stream, format, err := microphone.OpenStream(mctx, deviceConfig)
 					if err != nil {
