@@ -62,6 +62,7 @@ func (client *Client) Call(ctx context.Context, room string, audioInput beep.Str
 	// Resample audio
 	// NB: Perhaps we can determine the sample rate based on everyone's connections
 	resampled := beep.Resample(client.quality, format.SampleRate, client.sr, audioInput)
+	resampled.SetRatio(1)
 
 	stream, err := client.route.Call(ctx)
 	if err != nil {
@@ -73,7 +74,7 @@ func (client *Client) Call(ctx context.Context, room string, audioInput beep.Str
 	// Send data
 	go func() {
 		for {
-			buf := make([][2]float64, 1536) // Optimal sending size is 16KiB-64KiB
+			buf := make([][2]float64, 2 * 1024) // Optimal sending size is 16KiB-64KiB
 
 			numSamples, ok := resampled.Stream(buf)
 			if !ok {
