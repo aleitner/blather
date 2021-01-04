@@ -1,6 +1,12 @@
 # Blather [![PkgGoDev](https://pkg.go.dev/badge/github.com/aleitner/blather)](https://pkg.go.dev/github.com/aleitner/blather)
 Library for making group calls that have spacial awareness
 
+## Architecture
+
+### Diagram
+
+![](https://github.com/aleitner/blather/blob/master/diagram.png?raw=true)
+
 ## TODO
 
 #### Library:
