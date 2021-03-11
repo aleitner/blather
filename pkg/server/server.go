@@ -73,7 +73,7 @@ func (bs *BlatherServer) Call(stream blatherpb.Phone_CallServer) error {
 			}
 
 			// Forward the data to the other clients
-			room.Forward(md.ClientID, data)
+			room.Forward(data)
 		}
 
 		wg.Done()
