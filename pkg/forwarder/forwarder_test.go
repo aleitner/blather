@@ -128,14 +128,14 @@ func TestForwarder(t *testing.T) {
 		var wg sync.WaitGroup
 		for i := transferAgentCount - 10; i < transferAgentCount; i++{
 			wg.Add(1)
-			go func() {
+			go func(i int) {
 				for x := 0; x < 1000; x++ {
 					f.Forward(&blatherpb.CallData{
 						UserId: uint64(i),
 					})
 				}
 				wg.Done()
-			}()
+			}(i)
 		}
 
 		wg.Wait()
