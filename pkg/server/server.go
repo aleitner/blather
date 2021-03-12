@@ -11,8 +11,8 @@ import (
 	"github.com/aleitner/blather/internal/utils"
 	"github.com/aleitner/blather/pkg/userid"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	_ "google.golang.org/grpc/encoding/gzip"
+	"google.golang.org/grpc/metadata"
 
 	"github.com/aleitner/blather/pkg/forwarder"
 	"github.com/aleitner/blather/pkg/protobuf"
@@ -81,6 +81,7 @@ func (bs *BlatherServer) Call(stream blatherpb.Phone_CallServer) error {
 	wg.Add(1)
 
 	wg.Wait()
+
 	return nil
 }
 

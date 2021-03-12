@@ -15,7 +15,7 @@ type TransferAgent interface {
 
 // Forwarder contains a map of all the transfer agents that data needs to be sent to
 type Forwarder struct {
-	connections int
+	connections    int
 	transferAgents sync.Map
 	logger         log.Logger
 }

@@ -1,7 +1,7 @@
 package strmr
 
 type Streamer struct {
-	samples    [][2]float64
+	samples [][2]float64
 }
 
 func NewStreamer(samples [][2]float64) *Streamer {
@@ -10,7 +10,7 @@ func NewStreamer(samples [][2]float64) *Streamer {
 	}
 
 	return &Streamer{
-		samples:    samples,
+		samples: samples,
 	}
 }
 

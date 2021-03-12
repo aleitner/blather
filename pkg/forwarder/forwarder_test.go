@@ -14,13 +14,13 @@ import (
 )
 
 type MockTransferAgent struct {
-	store bool
+	store             bool
 	ReceivedFromCount map[uint64]int
 }
 
 func NewMockTransferAgent(store bool) *MockTransferAgent {
 	return &MockTransferAgent{
-		store: store,
+		store:             store,
 		ReceivedFromCount: make(map[uint64]int),
 	}
 }
@@ -52,7 +52,7 @@ func TestForwarder(t *testing.T) {
 
 		// forward the calldata
 		f.Forward(&blatherpb.CallData{
-			UserId:    1,
+			UserId: 1,
 		})
 
 		require.Equal(t, 0, mta1.ReceivedFromCount[1])
@@ -75,7 +75,7 @@ func TestForwarder(t *testing.T) {
 		require.Equal(t, 1, f.ConnectionCount())
 
 		calldata1 := &blatherpb.CallData{
-			UserId:    1,
+			UserId: 1,
 		}
 
 		// forward the calldata
@@ -115,7 +115,7 @@ func TestForwarder(t *testing.T) {
 			ticker := time.NewTicker(time.Millisecond)
 			for {
 				select {
-				case <- ticker.C:
+				case <-ticker.C:
 					f.Delete(userid.ID(y1.Intn(transferAgentCount - 10)))
 				case <-ctx.Done():
 					break
@@ -126,7 +126,7 @@ func TestForwarder(t *testing.T) {
 		// Forward loop
 		// Forward data from only the last 10 forwarders
 		var wg sync.WaitGroup
-		for i := transferAgentCount - 10; i < transferAgentCount; i++{
+		for i := transferAgentCount - 10; i < transferAgentCount; i++ {
 			wg.Add(1)
 			go func(i int) {
 				for x := 0; x < 1000; x++ {

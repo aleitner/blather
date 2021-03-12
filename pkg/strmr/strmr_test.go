@@ -1,8 +1,8 @@
 package strmr_test
 
 import (
-	"testing"
 	"math/rand"
+	"testing"
 	"time"
 
 	"github.com/aleitner/blather/pkg/strmr"
@@ -12,7 +12,7 @@ import (
 func generateTestSamples(size int) [][2]float64 {
 	samples := make([][2]float64, size)
 
-	for i:= 0; i < size; i++ {
+	for i := 0; i < size; i++ {
 		samples[i][0] = rand.New(rand.NewSource(time.Now().UnixNano())).Float64()
 		samples[i][1] = rand.New(rand.NewSource(time.Now().UnixNano())).Float64()
 	}
@@ -70,7 +70,7 @@ func TestStreamer(t *testing.T) {
 		numSamplesToRead := 256
 		actual := make([][2]float64, numSamplesToRead)
 
-		totalRead:= 0
+		totalRead := 0
 		for totalRead < len(samples) {
 			n, ok := stream.Stream(actual)
 			assert.Equal(t, numSamplesToRead, n)

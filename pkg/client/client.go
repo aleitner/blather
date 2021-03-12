@@ -10,10 +10,10 @@ import (
 	"github.com/aleitner/blather/pkg/muxer"
 	"github.com/aleitner/blather/pkg/protobuf"
 
-	"google.golang.org/grpc/encoding/gzip"
 	"github.com/faiface/beep"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -76,7 +76,7 @@ func (client *Client) Call(ctx context.Context, room string, audioInput beep.Str
 	// Send data
 	go func() {
 		for {
-			buf := make([][2]float64, 2 * 1024) // Optimal sending size is 16KiB-64KiB
+			buf := make([][2]float64, 2*1024) // Optimal sending size is 16KiB-64KiB
 
 			numSamples, ok := resampled.Stream(buf)
 			if !ok {

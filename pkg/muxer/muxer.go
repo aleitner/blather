@@ -12,19 +12,19 @@ import (
 
 // Muxer
 type Muxer struct {
-	logger *log.Logger
-	Queues map[userid.ID]*queue.Queue
+	logger          *log.Logger
+	VolumeStreamers map[userid.ID]*queue.Volume
 }
 
 func NewMuxer(logger *log.Logger) *Muxer {
 	return &Muxer{
-		logger: logger,
-		Queues: make(map[userid.ID]*queue.Queue),
+		logger:          logger,
+		VolumeStreamers: make(map[userid.ID]*queue.Volume),
 	}
 }
 
 func (m Muxer) Len() int {
-	return len(m.Queues)
+	return len(m.VolumeStreamers)
 }
 
 func (m *Muxer) Add(data *blatherpb.CallData) {
@@ -40,16 +40,18 @@ func (m *Muxer) Add(data *blatherpb.CallData) {
 	samples := utils.ToSampleRate(grpcSamples, numSamples)
 	streamer := strmr.NewStreamer(samples)
 
-	q, ok := m.Queues[id]
+	volumeStreamer, ok := m.VolumeStreamers[id]
+
 	if !ok {
-		q = queue.NewQueue()
-		m.Queues[id] = q
+		volumeStreamer = queue.NewVolume() // This updates the volumeStreamer for adding streamer to queue
+		m.VolumeStreamers[id] = volumeStreamer
 	}
-	q.Add(streamer)
+
+	volumeStreamer.Add(streamer)
 }
 
 func (m *Muxer) Delete(id userid.ID) {
-	delete(m.Queues, id)
+	delete(m.VolumeStreamers, id)
 }
 
 func (m *Muxer) Stream(samples [][2]float64) (n int, ok bool) {
@@ -69,7 +71,7 @@ func (m *Muxer) Stream(samples [][2]float64) (n int, ok bool) {
 	n = 0
 
 	for m.Len() > 0 && n < toStream {
-			for id, st := range m.Queues {
+		for id, st := range m.VolumeStreamers {
 
 			_, bok := streamedCount[id]
 			if !bok {
