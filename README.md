@@ -15,9 +15,10 @@ Library for making group calls that have spacial awareness
 - [x] Combine all input sources into single stream
 - [x] Client resamples audio before sending out
 - [x] Add rooms to server for different chat groups
-- [ ] Add rate limiter
 - [ ] Send coordinates to server
 - [ ] Retrieve coordinates from server
+- [ ] Change volume depending on distance
+- [ ] Add rate limiter
 - [ ] Adjust sample rate and quality by connection
 - [ ] Message signing and encryption
 - [ ] Switch server host when server goes down
@@ -26,6 +27,9 @@ Library for making group calls that have spacial awareness
 
 #### Application:
 - [ ] Front end
-- [ ] Change volume depending on distance
 - [ ] Pan audio depending on location
 - [x] Get Mic Input [aleitner/microphone](https://github.com/aleitner/microphone)
+
+#### Current Problems
+* Increasing delay over time
+* Excessive CPU usage by client
