@@ -1,5 +1,5 @@
 # Blather [![PkgGoDev](https://pkg.go.dev/badge/github.com/aleitner/blather)](https://pkg.go.dev/github.com/aleitner/blather)
-Library for making group calls that have spacial awareness
+Library for making group calls with spacial/proximity awareness
 
 ## Architecture
 

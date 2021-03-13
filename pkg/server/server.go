@@ -110,6 +110,10 @@ func (bs *BlatherServer) CreateRoom(ctx context.Context, req *blatherpb.CreateRo
 	return nil, nil
 }
 
+func (bs *BlatherServer) Coordination(stream blatherpb.Phone_CoordinationServer) error {
+	return nil
+}
+
 func (bs *BlatherServer) UpdateSettings(ctx context.Context, userdata *blatherpb.UserSettingsData) (*blatherpb.UserSettingsResponse, error) {
 	return nil, nil
 }
