@@ -11,13 +11,13 @@ Library for making group calls with spacial/proximity awareness
 
 #### Library:
 - [x] Stream audio to server
-- [x] Server forwards recieved audio to clients
+- [x] Server forwards received audio to clients
 - [x] Combine all input sources into single stream
 - [x] Client resamples audio before sending out
 - [x] Add rooms to server for different chat groups
-- [ ] Send coordinates to server
-- [ ] Retrieve coordinates from server
+- [x] Send and receive coordinates with audio data
 - [ ] Change volume depending on distance
+- [ ] Pan audio depending on location
 - [ ] Add rate limiter
 - [ ] Adjust sample rate and quality by connection
 - [ ] Message signing and encryption
@@ -27,7 +27,6 @@ Library for making group calls with spacial/proximity awareness
 
 #### Application:
 - [ ] Front end
-- [ ] Pan audio depending on location
 - [x] Get Mic Input [aleitner/microphone](https://github.com/aleitner/microphone)
 
 #### Current Problems

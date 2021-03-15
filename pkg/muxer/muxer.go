@@ -1,6 +1,8 @@
 package muxer
 
 import (
+	"sync"
+
 	"github.com/faiface/beep"
 	log "github.com/sirupsen/logrus"
 
@@ -11,33 +13,34 @@ import (
 // Muxer
 type Muxer struct {
 	logger *log.Logger
-	Queues map[userid.ID]*queue.Queue
+	Queues sync.Map
+	numQueues int
 }
 
 func NewMuxer(logger *log.Logger) *Muxer {
 	return &Muxer{
 		logger: logger,
-		Queues: make(map[userid.ID]*queue.Queue),
 	}
-}
-
-func (m Muxer) Len() int {
-	return len(m.Queues)
 }
 
 func (m *Muxer) Add(streamerID userid.ID, streamer beep.Streamer) {
-	q, ok := m.Queues[streamerID]
+	q, loaded := m.Queues.LoadOrStore(streamerID, queue.NewQueue())
 
-	if !ok {
-		q = queue.NewQueue() // This updates the volumeStreamer for adding streamer to queue
-		m.Queues[streamerID] = q
+	if !loaded {
+		m.numQueues += 1
 	}
 
-	q.Add(streamer)
+	q.(*queue.Queue).Add(streamer)
 }
 
 func (m *Muxer) Delete(id userid.ID) {
-	delete(m.Queues, id)
+	if _, loaded := m.Queues.LoadAndDelete(id); loaded {
+		m.numQueues -= 1
+	}
+}
+
+func (m *Muxer) Len() int {
+	return m.numQueues
 }
 
 func (m *Muxer) Stream(samples [][2]float64) (n int, ok bool) {
@@ -57,7 +60,9 @@ func (m *Muxer) Stream(samples [][2]float64) (n int, ok bool) {
 	n = 0
 
 	for m.Len() > 0 && n < toStream {
-		for id, st := range m.Queues {
+		m.Queues.Range(func(key interface{}, value interface{}) bool {
+		id := key.(userid.ID)
+		st := value.(*queue.Queue)
 
 			_, bok := streamedCount[id]
 			if !bok {
@@ -80,7 +85,9 @@ func (m *Muxer) Stream(samples [][2]float64) (n int, ok bool) {
 			if !sok {
 				m.Delete(id)
 			}
-		}
+
+			return true
+		})
 	}
 	return n, true
 }
