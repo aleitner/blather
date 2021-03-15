@@ -7,9 +7,9 @@ import (
 	"sync"
 
 	"github.com/aleitner/blather/internal/utils"
+	"github.com/aleitner/blather/pkg/coordinates"
 	"github.com/aleitner/blather/pkg/muxer"
 	"github.com/aleitner/blather/pkg/protobuf"
-
 	"github.com/faiface/beep"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -31,6 +31,7 @@ type Client struct {
 	Muxer        *muxer.Muxer
 	resampleRate beep.SampleRate
 	quality      int
+	coordinates	 *coordinates.Coordinates
 }
 
 func NewClient(id int, logger *log.Logger, conn *grpc.ClientConn) *Client {
@@ -44,6 +45,7 @@ func NewClient(id int, logger *log.Logger, conn *grpc.ClientConn) *Client {
 		// Audio mixing
 		resampleRate: beep.SampleRate(11025),
 		quality:      4,
+		coordinates: &coordinates.Coordinates{},
 	}
 }
 
@@ -92,12 +94,13 @@ func (client *Client) Call(ctx context.Context, room string, audioInput beep.Str
 			}
 
 			if err := stream.Send(&blatherpb.CallData{
+				UserId: uint64(client.id),
 				AudioData: &blatherpb.AudioData{
 					Samples:    utils.ToGRPCSampleRate(buf, numSamples),
 					NumSamples: uint32(numSamples),
 					SampleRate: uint32(inputSampleRate),
 				},
-				UserId: uint64(client.id),
+				Coordinates: client.coordinates.ToGRPC(),
 			}); err != nil {
 				client.logger.Errorf("stream Send fail: %s/n", err)
 				break
@@ -109,7 +112,7 @@ func (client *Client) Call(ctx context.Context, room string, audioInput beep.Str
 		}
 
 		wg.Done()
-		client.logger.Errorf("Finished sending data...\n")
+		client.logger.Infof("Finished sending data...\n")
 	}()
 	wg.Add(1)
 

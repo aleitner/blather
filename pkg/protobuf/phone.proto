@@ -7,7 +7,6 @@ service Phone {
     rpc CreateRoom (CreateRoomReq) returns (CreateRoomResp);
     rpc Call (stream CallData) returns (stream CallData);
     rpc UpdateSettings (UserSettingsData) returns (UserSettingsResponse);
-    rpc Coordination (stream Coordinates) returns (stream Coordinates);
 }
 
 message CreateRoomReq {
@@ -18,8 +17,10 @@ message CreateRoomResp {
 }
 
 message CallData {
-    AudioData audio_data = 1;
-    uint64 user_id = 2;
+    uint64 user_id = 1;
+
+    AudioData audio_data = 2;
+    Coordinates coordinates = 3;
 }
 
 message AudioData {
@@ -37,7 +38,6 @@ message Coordinates {
     double x = 1;
     double y = 2;
     double z = 3;
-    uint64 user_id = 4;
 }
 
 message UserSettingsData {

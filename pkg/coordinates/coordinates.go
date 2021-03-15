@@ -6,13 +6,13 @@ import (
 	call "github.com/aleitner/blather/pkg/protobuf"
 )
 
-type Coordinate struct {
+type Coordinates struct {
 	X float64
 	Y float64
 	Z float64
 }
 
-func (c Coordinate) ToGRPC() *call.Coordinates {
+func (c Coordinates) ToGRPC() *call.Coordinates {
 	return &call.Coordinates{
 		X: c.X,
 		Y: c.Y,
@@ -20,12 +20,12 @@ func (c Coordinate) ToGRPC() *call.Coordinates {
 	}
 }
 
-func (c Coordinate) Distance(object Coordinate) float64 {
+func (c Coordinates) Distance(object Coordinates) float64 {
 	return math.Sqrt(math.Pow(object.X-c.X, 2) + math.Pow(object.Y-c.Y, 2) + math.Pow(object.Z-c.Z, 2))
 }
 
-func GRPCCoordinateToCoordinate(grpcObject *call.Coordinates) *Coordinate {
-	return &Coordinate{
+func FromGRPC(grpcObject *call.Coordinates) *Coordinates {
+	return &Coordinates{
 		X: grpcObject.GetX(),
 		Y: grpcObject.GetY(),
 		Z: grpcObject.GetZ(),

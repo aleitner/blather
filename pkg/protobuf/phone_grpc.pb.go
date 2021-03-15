@@ -20,7 +20,6 @@ type PhoneClient interface {
 	CreateRoom(ctx context.Context, in *CreateRoomReq, opts ...grpc.CallOption) (*CreateRoomResp, error)
 	Call(ctx context.Context, opts ...grpc.CallOption) (Phone_CallClient, error)
 	UpdateSettings(ctx context.Context, in *UserSettingsData, opts ...grpc.CallOption) (*UserSettingsResponse, error)
-	Coordination(ctx context.Context, opts ...grpc.CallOption) (Phone_CoordinationClient, error)
 }
 
 type phoneClient struct {
@@ -80,37 +79,6 @@ func (c *phoneClient) UpdateSettings(ctx context.Context, in *UserSettingsData, 
 	return out, nil
 }
 
-func (c *phoneClient) Coordination(ctx context.Context, opts ...grpc.CallOption) (Phone_CoordinationClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Phone_serviceDesc.Streams[1], "/blatherpb.Phone/Coordination", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &phoneCoordinationClient{stream}
-	return x, nil
-}
-
-type Phone_CoordinationClient interface {
-	Send(*Coordinates) error
-	Recv() (*Coordinates, error)
-	grpc.ClientStream
-}
-
-type phoneCoordinationClient struct {
-	grpc.ClientStream
-}
-
-func (x *phoneCoordinationClient) Send(m *Coordinates) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *phoneCoordinationClient) Recv() (*Coordinates, error) {
-	m := new(Coordinates)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 // PhoneServer is the server API for Phone service.
 // All implementations should embed UnimplementedPhoneServer
 // for forward compatibility
@@ -118,7 +86,6 @@ type PhoneServer interface {
 	CreateRoom(context.Context, *CreateRoomReq) (*CreateRoomResp, error)
 	Call(Phone_CallServer) error
 	UpdateSettings(context.Context, *UserSettingsData) (*UserSettingsResponse, error)
-	Coordination(Phone_CoordinationServer) error
 }
 
 // UnimplementedPhoneServer should be embedded to have forward compatible implementations.
@@ -133,9 +100,6 @@ func (UnimplementedPhoneServer) Call(Phone_CallServer) error {
 }
 func (UnimplementedPhoneServer) UpdateSettings(context.Context, *UserSettingsData) (*UserSettingsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateSettings not implemented")
-}
-func (UnimplementedPhoneServer) Coordination(Phone_CoordinationServer) error {
-	return status.Errorf(codes.Unimplemented, "method Coordination not implemented")
 }
 
 // UnsafePhoneServer may be embedded to opt out of forward compatibility for this service.
@@ -211,32 +175,6 @@ func _Phone_UpdateSettings_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Phone_Coordination_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(PhoneServer).Coordination(&phoneCoordinationServer{stream})
-}
-
-type Phone_CoordinationServer interface {
-	Send(*Coordinates) error
-	Recv() (*Coordinates, error)
-	grpc.ServerStream
-}
-
-type phoneCoordinationServer struct {
-	grpc.ServerStream
-}
-
-func (x *phoneCoordinationServer) Send(m *Coordinates) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *phoneCoordinationServer) Recv() (*Coordinates, error) {
-	m := new(Coordinates)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 var _Phone_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "blatherpb.Phone",
 	HandlerType: (*PhoneServer)(nil),
@@ -254,12 +192,6 @@ var _Phone_serviceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "Call",
 			Handler:       _Phone_Call_Handler,
-			ServerStreams: true,
-			ClientStreams: true,
-		},
-		{
-			StreamName:    "Coordination",
-			Handler:       _Phone_Coordination_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},
