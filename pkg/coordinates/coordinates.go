@@ -20,7 +20,7 @@ func (c Coordinates) ToGRPC() *call.Coordinates {
 	}
 }
 
-func (c Coordinates) Distance(object Coordinates) float64 {
+func (c Coordinates) Distance(object *Coordinates) float64 {
 	return math.Sqrt(math.Pow(object.X-c.X, 2) + math.Pow(object.Y-c.Y, 2) + math.Pow(object.Z-c.Z, 2))
 }
 

@@ -10,7 +10,10 @@ import (
 	"github.com/aleitner/blather/pkg/coordinates"
 	"github.com/aleitner/blather/pkg/muxer"
 	"github.com/aleitner/blather/pkg/protobuf"
+	"github.com/aleitner/blather/pkg/strmr"
+	"github.com/aleitner/blather/pkg/userid"
 	"github.com/faiface/beep"
+	"github.com/faiface/beep/effects"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding/gzip"
@@ -125,8 +128,14 @@ func (client *Client) Call(ctx context.Context, room string, audioInput beep.Str
 				break
 			}
 
+			id, volumeStreamer := client.StreamerFromGRPC(res)
+			if volumeStreamer == nil {
+				client.logger.Errorf("stream Recv fail: %s/n", err)
+				continue
+			}
+
 			// Add audio data to Muxer
-			client.Muxer.Add(res)
+			client.Muxer.Add(id, volumeStreamer)
 		}
 
 		wg.Done()
@@ -135,6 +144,33 @@ func (client *Client) Call(ctx context.Context, room string, audioInput beep.Str
 
 	wg.Wait()
 	return nil
+}
+
+func (client *Client) StreamerFromGRPC(data *blatherpb.CallData) (userid.ID, *effects.Volume) {
+	audioData := data.GetAudioData()
+	if audioData.GetNumSamples() == 0 {
+		return 0, nil
+	}
+
+	grpcSamples := audioData.GetSamples()
+	numSamples := int(audioData.GetNumSamples())
+	id := userid.ID(data.GetUserId())
+
+	samples := utils.ToSampleRate(grpcSamples, numSamples)
+	streamer := strmr.NewStreamer(samples)
+
+	c := coordinates.FromGRPC(data.GetCoordinates())
+	// TODO: Use this distance to determine volume
+	_ = c.Distance(client.coordinates)
+
+	volume := &effects.Volume{
+		Streamer: streamer,
+		Base:     0,
+		Volume:   0,
+		Silent:   false,
+	}
+
+	return id, volume
 }
 
 // SetResampleRate sets the sample rate for audio to be resampled to

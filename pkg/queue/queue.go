@@ -1,20 +1,20 @@
 package queue
 
 import (
-	"github.com/aleitner/blather/pkg/strmr"
+	"github.com/faiface/beep"
 )
 
 type Queue struct {
-	streamers []*strmr.Streamer
+	streamers []beep.Streamer
 }
 
 func NewQueue() *Queue {
 	return &Queue{
-		streamers: []*strmr.Streamer{},
+		streamers: []beep.Streamer{},
 	}
 }
 
-func (q *Queue) Add(streamer *strmr.Streamer) {
+func (q *Queue) Add(streamer beep.Streamer) {
 	q.streamers = append(q.streamers, streamer)
 }
 

@@ -1,57 +1,43 @@
 package muxer
 
 import (
+	"github.com/faiface/beep"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/aleitner/blather/internal/utils"
-	blatherpb "github.com/aleitner/blather/pkg/protobuf"
 	"github.com/aleitner/blather/pkg/queue"
-	"github.com/aleitner/blather/pkg/strmr"
 	"github.com/aleitner/blather/pkg/userid"
 )
 
 // Muxer
 type Muxer struct {
-	logger          *log.Logger
-	VolumeStreamers map[userid.ID]*queue.Volume
+	logger *log.Logger
+	Queues map[userid.ID]*queue.Queue
 }
 
 func NewMuxer(logger *log.Logger) *Muxer {
 	return &Muxer{
-		logger:          logger,
-		VolumeStreamers: make(map[userid.ID]*queue.Volume),
+		logger: logger,
+		Queues: make(map[userid.ID]*queue.Queue),
 	}
 }
 
 func (m Muxer) Len() int {
-	return len(m.VolumeStreamers)
+	return len(m.Queues)
 }
 
-func (m *Muxer) Add(data *blatherpb.CallData) {
-	audioData := data.GetAudioData()
-	if audioData.GetNumSamples() == 0 {
-		return
-	}
-
-	grpcSamples := audioData.GetSamples()
-	numSamples := int(audioData.GetNumSamples())
-	id := userid.ID(data.GetUserId())
-
-	samples := utils.ToSampleRate(grpcSamples, numSamples)
-	streamer := strmr.NewStreamer(samples)
-
-	volumeStreamer, ok := m.VolumeStreamers[id]
+func (m *Muxer) Add(streamerID userid.ID, streamer beep.Streamer) {
+	q, ok := m.Queues[streamerID]
 
 	if !ok {
-		volumeStreamer = queue.NewVolume() // This updates the volumeStreamer for adding streamer to queue
-		m.VolumeStreamers[id] = volumeStreamer
+		q = queue.NewQueue() // This updates the volumeStreamer for adding streamer to queue
+		m.Queues[streamerID] = q
 	}
 
-	volumeStreamer.Add(streamer)
+	q.Add(streamer)
 }
 
 func (m *Muxer) Delete(id userid.ID) {
-	delete(m.VolumeStreamers, id)
+	delete(m.Queues, id)
 }
 
 func (m *Muxer) Stream(samples [][2]float64) (n int, ok bool) {
@@ -71,7 +57,7 @@ func (m *Muxer) Stream(samples [][2]float64) (n int, ok bool) {
 	n = 0
 
 	for m.Len() > 0 && n < toStream {
-		for id, st := range m.VolumeStreamers {
+		for id, st := range m.Queues {
 
 			_, bok := streamedCount[id]
 			if !bok {
