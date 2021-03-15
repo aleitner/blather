@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/aleitner/blather/pkg/client"
+	"github.com/aleitner/blather/pkg/userid"
 	"github.com/aleitner/microphone"
 
 	"github.com/faiface/beep"
@@ -43,12 +44,12 @@ func main() {
 					var id = rand.New(rand.NewSource(time.Now().UnixNano())).Int()
 
 					var logger = log.New()
-					client := client.NewClient(id, logger, conn)
-					defer client.CloseConn()
+					blatherClient := client.NewClient(userid.FromInt(id), logger, conn)
+					defer blatherClient.CloseConn()
 
 					ctx := context.Background()
 
-					roomID, err := client.CreateRoom(ctx)
+					roomID, err := blatherClient.CreateRoom(ctx)
 					if err != nil {
 						return err
 					}
@@ -108,12 +109,12 @@ func main() {
 
 					var id = rand.New(rand.NewSource(time.Now().UnixNano())).Int()
 
-					client := client.NewClient(id, logger, conn)
-					defer client.CloseConn()
+					blatherClient := client.NewClient(userid.FromInt(id), logger, conn)
+					defer blatherClient.CloseConn()
 
-					speaker.Play(beep.Seq(client.Muxer))
+					speaker.Play(beep.Seq(blatherClient.Muxer))
 
-					err = client.Call(ctx, c.String("room"), stream, int(format.SampleRate))
+					err = blatherClient.Call(ctx, c.String("room"), stream, int(format.SampleRate))
 					if err != nil {
 						return err
 					}

@@ -17,7 +17,7 @@ message CreateRoomResp {
 }
 
 message CallData {
-    uint64 user_id = 1;
+    string user_id = 1;
 
     AudioData audio_data = 2;
     Coordinates coordinates = 3;

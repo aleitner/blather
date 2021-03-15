@@ -15,13 +15,13 @@ import (
 
 type MockTransferAgent struct {
 	store             bool
-	ReceivedFromCount map[uint64]int
+	ReceivedFromCount map[string]int
 }
 
 func NewMockTransferAgent(store bool) *MockTransferAgent {
 	return &MockTransferAgent{
 		store:             store,
-		ReceivedFromCount: make(map[uint64]int),
+		ReceivedFromCount: make(map[string]int),
 	}
 }
 
@@ -45,19 +45,19 @@ func TestForwarder(t *testing.T) {
 		mta3 := NewMockTransferAgent(true)
 
 		// Add a transfer agents by their user id
-		f.Add(userid.ID(1), mta1)
-		f.Add(userid.ID(2), mta2)
-		f.Add(userid.ID(3), mta3)
+		f.Add("1", mta1)
+		f.Add("2", mta2)
+		f.Add("3", mta3)
 		require.Equal(t, 3, f.ConnectionCount())
 
 		// forward the calldata
 		f.Forward(&blatherpb.CallData{
-			UserId: 1,
+			UserId: "1",
 		})
 
-		require.Equal(t, 0, mta1.ReceivedFromCount[1])
-		require.Equal(t, 1, mta2.ReceivedFromCount[1])
-		require.Equal(t, 1, mta3.ReceivedFromCount[1])
+		require.Equal(t, 0, mta1.ReceivedFromCount["1"])
+		require.Equal(t, 1, mta2.ReceivedFromCount["1"])
+		require.Equal(t, 1, mta3.ReceivedFromCount["1"])
 	}
 
 	{ // Handling 1 connection
@@ -67,27 +67,27 @@ func TestForwarder(t *testing.T) {
 		mta := NewMockTransferAgent(true)
 
 		// Add a transfer agent by their user id
-		f.Add(userid.ID(1), mta)
+		f.Add(userid.FromInt(1), mta)
 		require.Equal(t, 1, f.ConnectionCount())
 
 		// Don't add the same user ID twice
-		f.Add(userid.ID(1), mta)
+		f.Add(userid.FromInt(1), mta)
 		require.Equal(t, 1, f.ConnectionCount())
 
 		calldata1 := &blatherpb.CallData{
-			UserId: 1,
+			UserId: "1",
 		}
 
 		// forward the calldata
 		f.Forward(calldata1)
-		require.Equal(t, 0, mta.ReceivedFromCount[1])
+		require.Equal(t, 0, mta.ReceivedFromCount["1"])
 
 		// delete transfer agent by userid
-		f.Delete(userid.ID(1))
+		f.Delete("1")
 		require.Equal(t, 0, f.ConnectionCount())
 
 		// don't lower connection count if userid doesn't exist
-		f.Delete(userid.ID(1))
+		f.Delete("1")
 		require.Equal(t, 0, f.ConnectionCount())
 	}
 
@@ -104,7 +104,7 @@ func TestForwarder(t *testing.T) {
 		transferAgentCount := 1000
 		for i := 0; i < transferAgentCount; i++ {
 			mta := NewMockTransferAgent(false)
-			f.Add(userid.ID(i), mta)
+			f.Add(userid.FromInt(i), mta)
 		}
 
 		// Periodically delete
@@ -116,7 +116,7 @@ func TestForwarder(t *testing.T) {
 			for {
 				select {
 				case <-ticker.C:
-					f.Delete(userid.ID(y1.Intn(transferAgentCount - 10)))
+					f.Delete(userid.FromInt(y1.Intn(transferAgentCount - 10)))
 				case <-ctx.Done():
 					break
 				}
@@ -131,7 +131,7 @@ func TestForwarder(t *testing.T) {
 			go func(i int) {
 				for x := 0; x < 1000; x++ {
 					f.Forward(&blatherpb.CallData{
-						UserId: uint64(i),
+						UserId: userid.FromInt(i).String(),
 					})
 				}
 				wg.Done()

@@ -3,7 +3,6 @@ package client
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"sync"
 
 	"github.com/aleitner/blather/internal/utils"
@@ -27,7 +26,7 @@ type CallClient interface {
 }
 
 type Client struct {
-	id           int
+	id           userid.ID
 	logger       *log.Logger
 	route        blatherpb.PhoneClient
 	conn         *grpc.ClientConn
@@ -37,7 +36,7 @@ type Client struct {
 	coordinates	 *coordinates.Coordinates
 }
 
-func NewClient(id int, logger *log.Logger, conn *grpc.ClientConn) *Client {
+func NewClient(id userid.ID, logger *log.Logger, conn *grpc.ClientConn) *Client {
 	return &Client{
 		id:     id,
 		logger: logger,
@@ -62,7 +61,7 @@ func (client *Client) CreateRoom(ctx context.Context) (roomID string, err error)
 }
 
 func (client *Client) Call(ctx context.Context, room string, audioInput beep.Streamer, inputSampleRate int) error {
-	clientId := strconv.Itoa(client.id)
+	clientId := client.id.String()
 	md := metadata.Pairs("client-id", clientId, "room-id", room)
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
@@ -97,7 +96,7 @@ func (client *Client) Call(ctx context.Context, room string, audioInput beep.Str
 			}
 
 			if err := stream.Send(&blatherpb.CallData{
-				UserId: uint64(client.id),
+				UserId: client.id.String(),
 				AudioData: &blatherpb.AudioData{
 					Samples:    utils.ToGRPCSampleRate(buf, numSamples),
 					NumSamples: uint32(numSamples),
@@ -149,7 +148,7 @@ func (client *Client) Call(ctx context.Context, room string, audioInput beep.Str
 func (client *Client) StreamerFromGRPC(data *blatherpb.CallData) (userid.ID, *effects.Volume) {
 	audioData := data.GetAudioData()
 	if audioData.GetNumSamples() == 0 {
-		return 0, nil
+		return "", nil
 	}
 
 	grpcSamples := audioData.GetSamples()

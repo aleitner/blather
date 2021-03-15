@@ -131,11 +131,6 @@ func expandMetaData(ctx context.Context) (*MD, error) {
 		return nil, fmt.Errorf("Failed to retrieve incoming id")
 	}
 
-	contactID, err := userid.FromString(IDAsString[0])
-	if err != nil {
-		return nil, fmt.Errorf("Failed to parse incoming id: %s", err.Error())
-	}
-
 	RoomID := md.Get("room-id")
 
 	if len(RoomID) <= 0 {
@@ -143,7 +138,7 @@ func expandMetaData(ctx context.Context) (*MD, error) {
 	}
 
 	return &MD{
-		ClientID: contactID,
+		ClientID: userid.ID(IDAsString[0]),
 		RoomID:   RoomID[0],
 	}, nil
 }
